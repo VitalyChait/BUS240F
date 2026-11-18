@@ -1,0 +1,13 @@
+option_id,location_id,location_name,window_id,operating_window_label,scheduled_hours_per_week,pilot_weeks,total_pilot_cost_usd
+L01_A,L01,Cedar Walk,A,Tue-Sat 10:00-14:00,20,4,18000
+L01_B,L01,Cedar Walk,B,Tue-Sat 14:00-18:00,20,4,19500
+L02_A,L02,Maple Court,A,Tue-Sat 10:00-14:00,20,4,15000
+L02_B,L02,Maple Court,B,Tue-Sat 14:00-18:00,20,4,16500
+L03_A,L03,Willow Square,A,Tue-Sat 10:00-14:00,20,4,12000
+L03_B,L03,Willow Square,B,Tue-Sat 14:00-18:00,20,4,13500
+L04_A,L04,Birch Arcade,A,Tue-Sat 10:00-14:00,20,4,17500
+L04_B,L04,Birch Arcade,B,Tue-Sat 14:00-18:00,20,4,18500
+L05_A,L05,Juniper Row,A,Tue-Sat 10:00-14:00,20,4,19000
+L05_B,L05,Juniper Row,B,Tue-Sat 14:00-18:00,20,4,21000
+L06_A,L06,Aspen Court,A,Tue-Sat 10:00-14:00,20,4,14500
+L06_B,L06,Aspen Court,B,Tue-Sat 14:00-18:00,20,4,16000
