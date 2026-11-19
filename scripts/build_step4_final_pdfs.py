@@ -358,8 +358,8 @@ def draw_sensitivity_chart(
     ]
 
     group_w = plot_w / len(regimes)
-    bar_w = min(20.0 if compact else 27.0, group_w * 0.19)
-    bar_gap = 2.5 if compact else 3.5
+    bar_w = min(21.5 if compact else 27.0, group_w * 0.20)
+    bar_gap = 3.0 if compact else 3.5
 
     for g_idx, (r_label, key) in enumerate(regimes):
         gx_center = plot_left + (g_idx + 0.5) * group_w
@@ -400,8 +400,8 @@ def draw_sensitivity_chart(
                 c.rect(bx, plot_bottom, bar_w, bh, fill=1, stroke=0)
 
             c.setFillColor(DARK_TEXT)
-            c.setFont("Helvetica-Bold" if oid in ("L01_A", "L04_A") or (key == "trimmed" and oid == "L06_B") else "Helvetica", 5.2 if compact else 6.3)
-            c.drawCentredString(bx + bar_w / 2, plot_bottom + bh + 2.5, f"{val:,.0f}" if compact else f"{val:,.2f}")
+            c.setFont("Helvetica-Bold" if oid in ("L01_A", "L04_A") or (key == "trimmed" and oid == "L06_B") else "Helvetica", 4.7 if compact else 6.2)
+            c.drawCentredString(bx + bar_w / 2, plot_bottom + bh + 2.5, f"{val:,.2f}")
 
     return y_top - height
 
@@ -415,56 +415,75 @@ def build_two_page_brief(golden: dict) -> None:
     c.setTitle("BUS 240F Two-Page Executive Decision Brief - Vitaly Chait")
     c.setAuthor("Vitaly Chait")
 
-    body_st = ParagraphStyle("B", fontName="Helvetica", fontSize=7.4, leading=9.3, textColor=DARK_TEXT)
-    small_st = ParagraphStyle("S", fontName="Helvetica", fontSize=7.1, leading=8.9, textColor=DARK_TEXT)
+    body_st = ParagraphStyle("B", fontName="Helvetica", fontSize=6.9, leading=9.3, textColor=DARK_TEXT)
+    bullet_st = ParagraphStyle(
+        "BL", fontName="Helvetica", fontSize=6.9, leading=9.2,
+        leftIndent=10, firstLineIndent=-8, spaceBefore=2.0, textColor=DARK_TEXT,
+    )
+    small_st = ParagraphStyle("S", fontName="Helvetica", fontSize=6.8, leading=9.1, textColor=DARK_TEXT)
 
     # ==================== PAGE 1 ====================
     y = page_h - 20.0
     c.setFillColor(NAVY)
     c.roundRect(margin_x, y - 32, content_w, 32, 4, fill=1, stroke=0)
     c.setFillColor(colors.white)
-    c.setFont("Helvetica-Bold", 11.2)
+    c.setFont("Helvetica-Bold", 11.0)
     c.drawString(margin_x + 10, y - 13.5, "BUS 240F Executive Decision Brief - Pop-Up Pilot Location & Window Selection")
-    c.setFont("Helvetica", 7.3)
+    c.setFont("Helvetica", 7.2)
     c.setFillColor(colors.HexColor("#CBD5E1"))
     c.drawString(
         margin_x + 10,
         y - 24.5,
         "Vitaly Chait  |  Decision Date: Sep 28, 2026  |  Trial Period: Oct 12 - Nov 8, 2026 (4 wks, 80 hrs)  |  Page 1 of 2",
     )
-    y -= 38
+    y -= 40
 
-    # Recommendation Callout + Priority Framework
+    # Recommendation Callout + Priority Framework (Plain English)
     rec_html = (
-        "<b>EXECUTIVE RECOMMENDATION - Authorize L01_A (Cedar Walk, Window A: Tue-Sat 10:00-14:00, Fixed Cost $18,000):</b> "
-        "Among the 8 options meeting the binding <b>&lt;= $18,000</b> four-week budget cap, <b>L01_A</b> delivers the highest Observed-Week Mean (<b>1,510.00 passages/wk</b>) and highest Observed-Week Median (<b>1,535.00 passages/wk</b>) across its 14 complete weeks (raw sum = 21,140; SD = 302.58; CV = 20.04%; IQR = 477.50; range 920-1,970). "
-        "<b>Priority Framework:</b> (1) Strict adherence to the $18,000 cap (excluding L05_B $21,000, L01_B $19,500, L05_A $19,000, L04_B $18,500); "
-        "(2) Maximize typical &amp; average weekly passerby exposure per 20-hr window to support the retailer's engagement-learning goal; and "
-        "(3) Balance variability and budget slack against credible alternatives before committing."
+        "<b>OUR RECOMMENDATION - Pick L01_A (Cedar Walk, Shift A: Tue-Sat 10:00am-2:00pm, Cost $18,000):</b> "
+        "To test shopper interest in reusable bottles and lunch containers during the 4-week pilot (Oct 12 - Nov 8, 2026; 20 hrs/wk), "
+        "<b>L01_A</b> brings the most foot traffic of any option within the <b>&lt;= $18,000</b> budget: <b>1,510.00</b> crossings per week on average "
+        "and <b>1,535.00</b> in a typical middle week (across 14 complete weeks; raw sum 21,140, SD 302.58, CV 20.04%, IQR 477.50, range 920-1,970).<br/>"
+        "<b>How We Ranked Options:</b> (1) Stay within the hard <b>$18,000</b> budget (ruling out 4 over-budget sites: <i>L05_B</i> $21,000, <i>L01_B</i> $19,500, <i>L05_A</i> $19,000, <i>L04_B</i> $18,500); "
+        "(2) Maximize weekly passerby exposure; (3) Check whether paying $500 more than <i>L04_A</i> ($17,500) is worthwhile (+108.64 crossings/wk = +435 over 4 weeks, just $1.15 per extra crossing)."
     )
     rp = Paragraph(rec_html, body_st)
     _, rh = rp.wrap(content_w - 14, 150)
-    box_h = rh + 9
+    box_h = rh + 11
     c.setFillColor(CALLOUT_BG)
     c.setStrokeColor(BLUE)
     c.setLineWidth(1.0)
     c.roundRect(margin_x, y - box_h, content_w, box_h, 4, fill=1, stroke=1)
-    rp.drawOn(c, margin_x + 7, y - 4.5 - rh)
-    y -= (box_h + 6)
+    rp.drawOn(c, margin_x + 7, y - 5.5 - rh)
+    y -= (box_h + 8)
 
-    # Credible Affordable Alternatives Comparison
-    y = draw_section_bar(c, "Comparison with Credible Affordable Alternatives (Within <= $18,000 Cap)", margin_x, y, content_w)
+    # Credible Affordable Alternatives Comparison (Plain-English Bullets)
+    y = draw_section_bar(c, "How L01_A Compares to the Best Affordable Alternatives (<= $18,000)", margin_x, y, content_w)
     y = draw_para(
         c,
-        "<b>1. L04_A (Birch Arcade, Window A, $17,500, n=14 complete / 2 missing) - Primary Stability Alternative:</b> Saves $500 under budget; achieves Mean <b>1,401.36</b> and 2nd-highest affordable Median <b>1,424.50</b> (raw sum 19,619), with substantially lower week-to-week volatility (SD = <b>204.49</b>, CV = <b>14.59%</b>, IQR = 281.75, range 978-1,721). Over shared and late-season weeks, L04_A overtakes L01_A (see Sensitivity, Page 2).<br/>"
-        "<b>2. L06_B (Aspen Court, Window B, $16,000, n=15 / 1 missing) - High-Variance / Spike-Driven Alternative:</b> Saves $2,000 and posts highest affordable raw sum (21,439) and #2 Mean (<b>1,429.27</b>), but its Median falls to <b>1,327.00</b> with extreme dispersion (SD = <b>470.64</b>, CV = <b>32.93%</b>, IQR = 554.50, range 840-2,422) driven by two isolated surges.<br/>"
-        "<b>3. L02_B (Maple Court, Window B, $16,500, n=15 / 1 missing) - Lowest-Volatility Contender:</b> Saves $1,500 with tight consistency (SD = <b>127.56</b>, CV = <b>9.62%</b>, IQR = 161.00), but trails L01_A by 184.27 mean passages/wk (Mean <b>1,325.73</b>, Median <b>1,316.00</b>). L02_A ($15,000, CV = 7.41%, Mean 1,250.56), L06_A ($14,500, Mean 1,169.94), L03_B ($13,500, Mean 1,157.44), and L03_A ($12,000, Mean 1,080.73) trade too much exposure.",
-        body_st,
+        "&bull; <b>L04_A (Birch Arcade, Window A, $17,500, n=14 weeks) - Steadiest Backup Choice:</b> Saves $500 and achieves a <b>1,401.36</b> average and #2 typical median (<b>1,424.50</b>; raw sum 19,619). Its traffic varies far less week-to-week (SD = <b>204.49</b>, CV = <b>14.59%</b>, IQR = 281.75, range 978-1,721) and even edges ahead of L01_A on shared dates (see Page 2).",
+        bullet_st,
         margin_x,
         y,
         content_w,
     )
-    y -= 6
+    y = draw_para(
+        c,
+        "&bull; <b>L06_B (Aspen Court, Window B, $16,000, n=15 weeks) - Unpredictable Spike-Driven Choice:</b> Saves $2,000 and shows a high total (21,439 over 15 weeks) and #2 average (<b>1,429.27</b>), yet a typical week is only <b>1,327.00</b>. Traffic swings wildly (SD = <b>470.64</b>, CV = <b>32.93%</b>, IQR = 554.50, range 840-2,422) because two giant spikes distort its average.",
+        bullet_st,
+        margin_x,
+        y,
+        content_w,
+    )
+    y = draw_para(
+        c,
+        "&bull; <b>L02_B (Maple Court, Window B, $16,500, n=15 weeks) &amp; Lower-Cost Options:</b> <i>L02_B</i> is very consistent (SD = <b>127.56</b>, CV = <b>9.62%</b>, IQR = 161.00) but averages only <b>1,325.73</b> (median <b>1,316.00</b>) - about 184 crossings/wk behind L01_A. Remaining affordable options (<i>L02_A</i> $15,000, Mean 1,250.56, CV 7.41%; <i>L06_A</i> $14,500, 1,169.94; <i>L03_B</i> $13,500, 1,157.44; <i>L03_A</i> $12,000, 1,080.73) give up too much traffic.",
+        bullet_st,
+        margin_x,
+        y,
+        content_w,
+    )
+    y -= 8
 
     # Primary Visual View (Compact Distribution Chart)
     y = draw_distribution_chart(
@@ -473,12 +492,12 @@ def build_two_page_brief(golden: dict) -> None:
         margin_x,
         y,
         content_w,
-        222.0,
+        220.0,
         title="Primary Visual View: Exposure, Variability & Budget Cap (All 12 Options)",
         subtitle="Units: Passage events / 20-hr scheduled week (Jun 8 - Sep 27, 2026) | Missing weeks (n=8) blank & excluded from denominators",
         compact=True,
     )
-    y -= 6
+    y -= 8
 
     # Precision Summary Table (All 12 Options)
     y = draw_section_bar(c, "Complete 12-Option Baseline Metrics Table (Jun 8 - Sep 27, 2026; Verified Against Starter CSVs)", margin_x, y, content_w)
@@ -550,51 +569,67 @@ def build_two_page_brief(golden: dict) -> None:
     c.showPage()
 
     # ==================== PAGE 2 ====================
-    p2_body = ParagraphStyle("P2B", fontName="Helvetica", fontSize=7.9, leading=10.1, textColor=DARK_TEXT)
-    p2_small = ParagraphStyle("P2S", fontName="Helvetica", fontSize=7.6, leading=9.7, textColor=DARK_TEXT)
+    p2_body = ParagraphStyle("P2B", fontName="Helvetica", fontSize=6.9, leading=9.3, textColor=DARK_TEXT)
+    p2_bullet = ParagraphStyle(
+        "P2BL", fontName="Helvetica", fontSize=6.9, leading=9.2,
+        leftIndent=10, firstLineIndent=-8, spaceBefore=2.0, textColor=DARK_TEXT,
+    )
+    p2_small = ParagraphStyle("P2S", fontName="Helvetica", fontSize=6.8, leading=9.1, textColor=DARK_TEXT)
 
     y = page_h - 20.0
     c.setFillColor(NAVY)
     c.roundRect(margin_x, y - 28, content_w, 28, 4, fill=1, stroke=0)
     c.setFillColor(colors.white)
-    c.setFont("Helvetica-Bold", 10.8)
-    c.drawString(margin_x + 10, y - 12.5, "BUS 240F Executive Decision Brief - Sensitivity Tests, Verification & Decision Triggers")
-    c.setFont("Helvetica", 7.2)
+    c.setFont("Helvetica-Bold", 10.6)
+    c.drawString(margin_x + 10, y - 12.5, "BUS 240F Executive Decision Brief - Stress Tests, Data Checks & When to Switch")
+    c.setFont("Helvetica", 7.1)
     c.setFillColor(colors.HexColor("#CBD5E1"))
     c.drawString(margin_x + 10, y - 22.5, "Vitaly Chait  |  Fixed Snapshot: BUS240F_Final_Project_Starter.twbx  |  Page 2 of 2")
     y -= 36
 
-    # Section A: Consequential Sensitivity Analysis
-    y = draw_section_bar(c, "Consequential Analytical Sensitivity Tests (Outlier Trimming & Shared-Week Alignment)", margin_x, y, content_w)
+    # Section A: Consequential Sensitivity Analysis (Plain-English Bullets)
+    y = draw_section_bar(c, "Stress-Testing Our Pick: Spikes, Missing Weeks & Late-Summer Trends", margin_x, y, content_w)
     y = draw_para(
         c,
-        "<b>1. Estimator &amp; Outlier Sensitivity (L06_B Mean vs. Median &amp; Spike-Trimming):</b> "
-        "L06_B's full-period Mean (<b>1,429.27</b>) exceeds L04_A (1,401.36), yet its Median (<b>1,327.00</b>) trails L04_A (1,424.50) by 97.50 passages/wk. Inspecting the weekly series reveals two isolated extreme surges for L06_B: <b>2,422</b> on <b>2026-07-06</b> and <b>2,343</b> on <b>2026-08-17</b> (all other 13 weeks lie within 840-1,740). Excluding those two unexplained spikes reduces L06_B's <b>n=13</b> spike-trimmed Mean from 1,429.27 to <b>1,282.62</b> (Median <b>1,274.00</b>, SD = 288.83), confirming that L06_B's apparent #2 mean rank is an outlier artifact.<br/>"
-        "<b>2. Shared-Week Completeness Sensitivity (10 Shared Affordable Weeks / 9 Shared All-Option Weeks / Late 4 Weeks):</b> "
-        "Because missing weeks do not overlap across sites (L01_A misses <i>06-29</i> and <i>08-24</i>; L04_A misses <i>06-22</i> and <i>09-07</i>; L06_B misses <i>08-24</i>; L02_B misses <i>07-20</i>; L03_A misses <i>08-10</i>), unequal denominators could bias comparisons. Restricting to the <b>10 shared complete weeks</b> across all 8 affordable options removes four above-average L01_A weeks (1,810; 1,970; 1,745; 1,545), lowering L01_A's Mean from 1,510.00 to <b>1,407.00</b> (Median <b>1,390.00</b>) and elevating <b>L04_A to 1,449.70 Mean / 1,458.50 Median</b> (L06_B reads 1,619.10 because both summer spikes remain inside the 10 shared weeks). Across the <b>9 shared weeks</b> (all 12 options, also excluding <i>07-27</i>), <b>L04_A leads L01_A at 1,455.56 vs. 1,423.33</b>. In the <b>Late-Season 4-Week window (Aug 31 - Sep 21)</b> closest to the Oct 12 pilot, <b>L04_A averages 1,472.67</b> (Median 1,500.00, n=3) vs. <b>L01_A at 1,370.00</b> (n=4; depressed by Aug 31 dip to 920) and L06_B at 1,420.00.<br/>"
-        "<b>Sensitivity Takeaway:</b> Our primary recommendation of <b>L01_A</b> stands because L01_A still leads across all 14 observed weeks (1,510.00 mean / 1,535.00 median) and its missing weeks cannot be assumed low; however, the test demonstrates a razor-thin structural margin with <b>L04_A</b>, making L04_A the clear fallback.",
-        p2_body,
+        "&bull; <b>Test 1 - Removing L06_B's Two One-Off Spikes:</b> L06_B looks strong on average (<b>1,429.27</b> vs. L04_A 1,401.36), but its typical middle week is much lower (<b>1,327.00</b> vs. L04_A 1,424.50). That is because L06_B had two huge isolated spikes (<b>2,422</b> on <b>2026-07-06</b> and <b>2,343</b> on <b>2026-08-17</b>), while its other 13 weeks ranged from 840 to 1,740. Without those two spikes (<b>n=13</b>), L06_B's average drops to <b>1,282.62</b> (median <b>1,274.00</b>, SD = 288.83) - proving it is too erratic to rely on.",
+        p2_bullet,
         margin_x,
         y,
         content_w,
     )
-    y -= 8
+    y = draw_para(
+        c,
+        "&bull; <b>Test 2 - Fair \"Apples-to-Apples\" Shared Weeks (10 Shared Affordable / 9 All-Option / 8 Non-Spike):</b> Because different sites had missing counts on different dates (L01_A missed 06-29 &amp; 08-24; L04_A missed 06-22 &amp; 09-07), we compared only the <b>10 shared weeks</b> where all 8 affordable sites had data. Cutting those 6 dates drops four busy L01_A weeks (1,810; 1,970; 1,745; 1,545), lowering L01_A to <b>1,407.00</b> (median <b>1,390.00</b>) while <b>L04_A moves ahead to 1,449.70</b> (median <b>1,458.50</b>; and <b>1,455.56 vs. 1,423.33</b> in the 9 shared all-option weeks). <i>Why L06_B jumps to 1,619.10 on the chart:</i> the 6 excluded dates remove L06_B's 5 slowest weeks (840-1,274) while keeping both 2,422 &amp; 2,343 spikes. Removing both missing dates and those 2 spikes leaves <b>8 shared non-spike weeks</b> where <b>L04_A leads all sites at 1,497.12</b> (median 1,500.50) vs. L06_B (1,428.25) and L01_A (1,368.75).",
+        p2_bullet,
+        margin_x,
+        y,
+        content_w,
+    )
+    y = draw_para(
+        c,
+        "&bull; <b>Late-Season Trend (Aug 31 - Sep 21) &amp; What We Learned:</b> In the final 4 weeks closest to October, <b>L04_A averages 1,472.67</b> (median 1,500.00, n=3) vs. <b>L01_A at 1,370.00</b> (n=4, L06_B 1,420.00). However, L01_A's dip came from one slow week (920 on Aug 31) followed by a strong <b>1,520.00 September rebound</b> (1,545; 1,735; 1,280). We keep <b>L01_A</b> as primary pick for full-summer peak exposure (1,510.00 mean / 1,535.00 median), with <b>L04_A</b> as a very close, steadier fallback.",
+        p2_bullet,
+        margin_x,
+        y,
+        content_w,
+    )
+    y -= 10
 
     # Embedded Multi-Subset Sensitivity Vector Chart
-    y = draw_sensitivity_chart(c, golden, margin_x, y, content_w, 224.0, compact=True)
-    y -= 8
+    y = draw_sensitivity_chart(c, golden, margin_x, y, content_w, 252.0, compact=True)
+    y -= 10
 
     # Mini Sensitivity Regime Table (Top 4 Contenders)
     s_w = [78, 52, 66, 66, 70, 70, 68, 78]
     s_h = ["Contender", "4-Wk Cost", "Full Mean", "Full Med", "10-Wk Mean", "10-Wk Med", "9-Wk Mean", "Late 4-Wk Mean"]
-    sr_h = 13.0
+    sr_h = 14.5
     c.setFillColor(NAVY)
     c.rect(margin_x, y - sr_h, content_w, sr_h, fill=1, stroke=0)
     c.setFillColor(colors.white)
     c.setFont("Helvetica-Bold", 6.6)
     cx = margin_x
     for ht, cw in zip(s_h, s_w):
-        c.drawCentredString(cx + cw / 2, y - 9.2, ht)
+        c.drawCentredString(cx + cw / 2, y - 10.2, ht)
         cx += cw
     y -= sr_h
     for idx, oid in enumerate(["L01_A", "L04_A", "L06_B", "L02_B"]):
@@ -612,39 +647,52 @@ def build_two_page_brief(golden: dict) -> None:
         cx = margin_x
         for ci, (vt, cw) in enumerate(zip(row_vals, s_w)):
             if ci == 0:
-                c.drawString(cx + 4, y - 9.2, vt)
+                c.drawString(cx + 4, y - 10.2, vt)
             else:
-                c.drawRightString(cx + cw - 4, y - 9.2, vt)
+                c.drawRightString(cx + cw - 4, y - 10.2, vt)
             cx += cw
         y -= sr_h
-    y -= 9
+    y -= 12
 
     # Section B: Verification Notes, Stewardship & AI Assistance Disclosure
-    y = draw_section_bar(c, "Verification Notes, Stewardship & AI Assistance Disclosure", margin_x, y, content_w)
+    y = draw_section_bar(c, "Verification Notes, Data Hygiene & AI Assistance Disclosure", margin_x, y, content_w)
     ver_html = (
-        "<b>Fixed Snapshot &amp; Parity Check:</b> Analysis uses the fixed synthetic teaching snapshot <b>BUS240F_Final_Project_Starter.twbx</b>; standalone CSVs (<i>Candidate_Options.csv</i>, <i>Weekly_Activity.csv</i>) and embedded package CSVs match 100% byte-for-byte. "
-        "<b>Record Counts &amp; Completeness:</b> Verified <b>12</b> candidate options (<b>8</b> Within Budget &lt;= <b>$18,000</b>; <b>4</b> Over Budget) and <b>192</b> weekly rows (12 x 16 weeks, 2026-06-08 to 2026-09-21) split into <b>184 Complete</b> (sum = <b>256,773</b> passages) and <b>8 Missing</b> (7 affordable, 1 over-budget; kept null/blank, never zero-filled). "
-        "<b>Source Benchmark Rows &amp; Fixed Cost Rule:</b> Verified <b>L01_A</b> on <b>2026-06-08 = Complete (1,175 passages)</b> and <b>L01_A</b> on <b>2026-06-29 = Missing (blank)</b>. Fixed 4-week cost is verified via <b>MIN(Total Pilot Cost Usd)</b> per option (never summed across 16 historical rows). "
-        "<b>AI Assistance Disclosure:</b> An AI coding assistant (Antigravity / Gemini) was used to draft Python validation checks, Tableau XML workbook assembly, and PDF formatting scripts; every computed statistic, Tableau relationship, and visual check was independently verified against raw CSV data and inspected in Tableau Desktop by the author."
+        "<b>Data Check &amp; Fixed Snapshot:</b> Checked all records in <b>BUS240F_Final_Project_Starter.twbx</b> (matches raw <i>Candidate_Options.csv</i> and <i>Weekly_Activity.csv</i> 100%): <b>12</b> options (<b>8</b> within the <b>$18,000</b> cap, <b>4</b> over budget) and <b>192</b> weekly rows (2026-06-08 to 2026-09-21) = <b>184 Complete</b> (<b>256,773</b> total passages) + <b>8 Missing</b> (kept blank, never set to zero). "
+        "<b>Spot Checks &amp; Cost Rule:</b> Confirmed <b>L01_A</b> on <b>2026-06-08 = Complete (1,175 passages)</b> and <b>2026-06-29 = Missing (blank)</b>; read single 4-week cost via <b>MIN(Total Pilot Cost Usd)</b> so it is never multiplied by 16 weeks. "
+        "<b>AI Assistance Disclosure:</b> An AI coding assistant (Antigravity / Gemini) helped build Python check scripts, Tableau XML files, and PDF layouts; the author verified every metric against raw CSVs and inspected the workbook in Tableau Desktop."
     )
     vp = Paragraph(ver_html, p2_small)
     _, vh = vp.wrap(content_w - 14, 200)
-    vbox_h = vh + 10
+    vbox_h = vh + 12
     c.setFillColor(LIGHT_BG)
     c.setStrokeColor(BORDER)
     c.setLineWidth(0.8)
     c.roundRect(margin_x, y - vbox_h, content_w, vbox_h, 4, fill=1, stroke=1)
-    vp.drawOn(c, margin_x + 7, y - 5 - vh)
-    y -= (vbox_h + 9)
+    vp.drawOn(c, margin_x + 7, y - 6 - vh)
+    y -= (vbox_h + 12)
 
     # Section C: Data Boundaries & What Evidence Would Change Our Recommendation
-    y = draw_section_bar(c, "Data Boundaries & Quantitative Thresholds That Would Change Our Recommendation", margin_x, y, content_w)
+    y = draw_section_bar(c, "Important Limits & Clear Rules for When to Switch or Wait", margin_x, y, content_w)
     y = draw_para(
         c,
-        "<b>Measurement &amp; Scope Boundaries:</b> Counts record bidirectional <i>passage events</i> including repeat crossings; they do <b>not</b> measure unique visitors, product interest, transactions, or profit. Historical June-September counts are descriptive potential-exposure baselines, not causal forecasts for October 12 - November 8, and causes of missing weeks and spikes are unobserved.<br/>"
-        "<b>1. Switch Recommendation from L01_A to L04_A (Birch Arcade, Window A, $17,500) if:</b> (a) management requires operational stability <b>CV &lt; 15%</b> (L04_A = 14.59% vs. L01_A = 20.04%) or prioritizes equal-week / late-season alignment (L04_A leads 1,449.70 vs. 1,407.00 on 10 shared weeks and 1,472.67 vs. 1,370.00 in late Aug-Sep); OR (b) a 2-week pre-pilot October count check shows L01_A below <b>1,350 passages/wk</b> while L04_A holds <b>&gt;= 1,400 passages/wk</b>.<br/>"
-        "<b>2. Recommend Waiting (Defer Trial) &amp; Next Check if:</b> a pre-trial October audit shows baseline traffic dropping below <b>1,100 passages/wk</b> at both L01_A and L04_A, reveals <b>&gt; 40% repeat-crossing inflation</b> (low unique-person reach), or uncovers unresolved site-access outages explaining L01_A's missing weeks (06-29, 08-24).",
-        p2_small,
+        "&bull; <b>What Counts Do Not Show:</b> Counts measure bidirectional foot-traffic crossings (including repeat passersby), <b>not</b> unique shoppers, actual purchases, or profit. Summer-to-September history does not guarantee October-November volume, and causes of missing weeks or spikes are unknown.",
+        p2_bullet,
+        margin_x,
+        y,
+        content_w,
+    )
+    y = draw_para(
+        c,
+        "&bull; <b>Switch to L04_A (Birch Arcade, Window A, $17,500) if:</b> management values steady weekly traffic (<b>CV &lt; 15%</b>; L04_A = 14.59% vs. L01_A = 20.04%) over peak average, OR a quick October check shows L01_A below <b>1,350 passages/wk</b> while L04_A stays at <b>&gt;= 1,400 passages/wk</b>.",
+        p2_bullet,
+        margin_x,
+        y,
+        content_w,
+    )
+    y = draw_para(
+        c,
+        "&bull; <b>Wait Before Launching if:</b> a pre-trial October spot check finds traffic under <b>1,100 passages/wk</b> at both sites, shows <b>&gt; 40% repeat-crossing inflation</b>, or uncovers unresolved closures explaining L01_A's missing weeks (06-29, 08-24).",
+        p2_bullet,
         margin_x,
         y,
         content_w,
@@ -698,7 +746,7 @@ def build_static_backup(golden: dict, wa_df: pd.DataFrame) -> None:
     c.setFont("Helvetica", 7.0)
     c.drawString(margin_x + 8, y - 22.5, "Benchmark Source Checks: L01_A on 2026-06-08 = Complete (1,175) | L01_A on 2026-06-29 = Missing (blank) | Total Weekly Records = 192 (16 per option)")
 
-    left_col_w = 108.0
+    left_col_w = 130.0
     right_tot_w = 42.0
     cell_w = (content_w - 16 - left_col_w - right_tot_w) / 16.0
     top_hdr_y = y - 34
@@ -718,8 +766,8 @@ def build_static_backup(golden: dict, wa_df: pd.DataFrame) -> None:
         o = golden["options"][oid]
         ry = top_hdr_y - (r_idx + 1) * row_h - 4
         c.setFillColor(DARK_TEXT if o["within_budget"] else MUTED)
-        c.setFont("Helvetica-Bold" if oid in ("L01_A", "L04_A", "L06_B") else "Helvetica", 6.5)
-        c.drawString(margin_x + 8, ry - 9, f"{oid} {o['location_name'][:10]} ({'OK' if o['within_budget'] else '>$18k'})")
+        c.setFont("Helvetica-Bold" if oid in ("L01_A", "L04_A", "L06_B") else "Helvetica", 6.4)
+        c.drawString(margin_x + 8, ry - 9, f"{oid} {o['location_name']} ({'OK' if o['within_budget'] else '>$18k'})")
 
         for w_idx, w_str in enumerate(weeks):
             wx = margin_x + 8 + left_col_w + w_idx * cell_w
@@ -1044,19 +1092,20 @@ def build_static_backup(golden: dict, wa_df: pd.DataFrame) -> None:
     y -= 10
     c.setFillColor(CALLOUT_BG)
     c.setStrokeColor(BLUE)
-    c.roundRect(margin_x, y - 54, content_w, 54, 4, fill=1, stroke=1)
+    c.roundRect(margin_x, y - 62, content_w, 62, 4, fill=1, stroke=1)
     c.setFillColor(NAVY)
-    c.setFont("Helvetica-Bold", 7.8)
-    c.drawString(margin_x + 10, y - 14, "Analytical Takeaway & Subset Exclusion Definitions:")
+    c.setFont("Helvetica-Bold", 7.6)
+    c.drawString(margin_x + 10, y - 13.5, "Analytical Takeaway & Subset Exclusion Definitions:")
     c.setFillColor(DARK_TEXT)
-    c.setFont("Helvetica", 7.2)
-    c.drawString(margin_x + 10, y - 26, "- Shared 10-Week Affordable excludes 6 weeks with >=1 missing affordable record (2026-06-22, 06-29, 07-20, 08-10, 08-24, 09-07); Shared 9-Week also excludes 2026-07-27 (L05_B missing).")
-    c.drawString(margin_x + 10, y - 37.5, "- Rank Reversal: Removing those 6 weeks drops L01_A from 1,510.00 to 1,407.00 (Med 1,390.00), elevating L04_A to 1,449.70 Mean / 1,458.50 Med (and 1,472.67 in Late 4-Wk).")
-    c.drawString(margin_x + 10, y - 49, "- Outlier Sensitivity: Trimming L06_B's two unexplained spikes (2,422 on 2026-07-06; 2,343 on 2026-08-17) yields n=13 Mean = 1,282.62, Med = 1,274.00, SD = 288.83.")
+    c.setFont("Helvetica", 6.8)
+    c.drawString(margin_x + 10, y - 24.5, "- Shared 10-Week Affordable excludes 6 weeks with >=1 missing affordable record (2026-06-22, 06-29, 07-20, 08-10, 08-24, 09-07); Shared 9-Week also excludes 2026-07-27.")
+    c.drawString(margin_x + 10, y - 35.5, "- Why L06_B Spikes in 10-Wk (1,619.10): Excluded dates drop L06_B's 5 slowest weeks (840-1,274) while keeping both spikes; on 8 non-spike shared weeks L04_A leads (1,497.12 vs L06_B 1,428.25, L01_A 1,368.75).")
+    c.drawString(margin_x + 10, y - 46.5, "- Rank Reversal & Sep Rebound: Shared 10-wk drops L01_A to 1,407.00 vs L04_A 1,449.70 (Late 4-wk: 1,472.67 vs 1,370.00), yet L01_A rebounded to 1,520.00 across its 3 Sep weeks (09-07, 09-14, 09-21).")
+    c.drawString(margin_x + 10, y - 57.5, "- Outlier Sensitivity: Trimming L06_B's two unexplained spikes (2,422 on 2026-07-06; 2,343 on 2026-08-17) yields n=13 Mean = 1,282.62, Med = 1,274.00, SD = 288.83.")
 
     c.showPage()
     c.save()
-    print(f"Generated {OUT_BACKUP.name} (4 landscape pages; Page 4 bottom remaining: {y - 54:.1f} pt).")
+    print(f"Generated {OUT_BACKUP.name} (4 landscape pages; Page 4 bottom remaining: {y - 62:.1f} pt).")
 
 
 def main() -> None:

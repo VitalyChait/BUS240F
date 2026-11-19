@@ -295,15 +295,25 @@ def build_checkpoint_pdf() -> None:
     body_style = ParagraphStyle(
         "Body",
         fontName="Helvetica",
-        fontSize=7.7,
-        leading=9.7,
+        fontSize=7.0,
+        leading=9.5,
+        textColor=DARK_TEXT,
+    )
+    bullet_style = ParagraphStyle(
+        "Bullet",
+        fontName="Helvetica",
+        fontSize=7.0,
+        leading=9.4,
+        leftIndent=10,
+        firstLineIndent=-8,
+        spaceBefore=1.5,
         textColor=DARK_TEXT,
     )
     callout_style = ParagraphStyle(
         "Callout",
         fontName="Helvetica",
-        fontSize=7.5,
-        leading=9.4,
+        fontSize=6.9,
+        leading=9.2,
         textColor=DARK_TEXT,
     )
 
@@ -312,87 +322,127 @@ def build_checkpoint_pdf() -> None:
     c.setFillColor(NAVY)
     c.roundRect(margin_x, y - 32, content_w, 32, 4, fill=1, stroke=0)
     c.setFillColor(colors.white)
-    c.setFont("Helvetica-Bold", 11.5)
+    c.setFont("Helvetica-Bold", 11.2)
     c.drawString(margin_x + 10, y - 14, "BUS 240F Final Project - Milestone 1 Checkpoint (Due November 20, 2026)")
-    c.setFont("Helvetica", 7.6)
+    c.setFont("Helvetica", 7.4)
     c.setFillColor(colors.HexColor("#CBD5E1"))
     c.drawString(
         margin_x + 10,
         y - 25.0,
-        "Author: Vitaly Chait  |  Snapshot: BUS240F_Final_Project_Starter.twbx  |  Historical Window: Jun 8 - Sep 27, 2026 (16 Weeks)  |  Trial: Oct 12 - Nov 8, 2026",
+        "Author: Vitaly Chait  |  Snapshot: BUS240F_Final_Project_Starter.twbx  |  Historical Data: Jun 8 - Sep 27, 2026 (16 Weeks)  |  Trial: Oct 12 - Nov 8, 2026",
     )
-    y -= 37
+    y -= 40
 
     # 1. Decision Question
     y = draw_section_header(c, "1", "Decision Question", margin_x, y, content_w)
     y = draw_para(
         c,
-        "<b>Decision Maker &amp; Objective:</b> Advise the <b>pilot-program manager</b> on which single location-and-operating-window option (out of <b>12 candidate options</b>: 6 fictional sites x Windows A [Tue-Sat 10:00-14:00] and B [Tue-Sat 14:00-18:00], 20 scheduled hrs/wk each) to authorize for a 4-week pop-up retail trial (<b>Oct 12 - Nov 8, 2026</b>; 80 total hours) evaluating passerby engagement with reusable bottles, lunch containers, and carry accessories. "
-        "<b>Binding Constraint:</b> Fixed 4-week pilot cost must satisfy <b>Total Pilot Cost &lt;= $18,000</b>, eliminating 4 over-budget options (<i>L05_B</i> $21,000; <i>L01_B</i> $19,500; <i>L05_A</i> $19,000; <i>L04_B</i> $18,500) and focusing comparison on the <b>8 affordable options</b> - specifically primary candidate <b>L01_A (Cedar Walk, Window A, $18,000)</b> vs. credible alternatives <b>L04_A (Birch Arcade, Window A, $17,500)</b>, <b>L06_B (Aspen Court, Window B, $16,000)</b>, and low-variance benchmark <b>L02_B (Maple Court, Window B, $16,500)</b>.",
+        "The <b>pilot-program manager</b> needs to pick <b>one store site and one 4-hour daily shift</b> for a 4-week pop-up shop (<b>Oct 12 - Nov 8, 2026</b>; 20 hours/week, 80 total hours) to test whether shoppers stop to engage with reusable bottles, lunch containers, and carry accessories.",
         body_style,
         margin_x,
         y,
         content_w,
     )
-    y -= 4
+    y = draw_para(
+        c,
+        "&bull; <b>12 Options Narrowed to 8 by Budget:</b> There are 6 locations, each with Shift A (Tue-Sat 10am-2pm) or Shift B (Tue-Sat 2pm-6pm). The hard <b>$18,000 total budget cap</b> rules out 4 expensive options (<i>L05_B</i> $21,000; <i>L01_B</i> $19,500; <i>L05_A</i> $19,000; <i>L04_B</i> $18,500) and leaves <b>8 affordable options</b>.",
+        bullet_style,
+        margin_x,
+        y,
+        content_w,
+    )
+    y = draw_para(
+        c,
+        "&bull; <b>Top Affordable Choices Compared:</b> Front-runner <b>L01_A (Cedar Walk, Window A, $18,000)</b> vs. steady runner-up <b>L04_A (Birch Arcade, Window A, $17,500)</b>, spike-heavy <b>L06_B (Aspen Court, Window B, $16,000)</b>, and low-variance <b>L02_B (Maple Court, Window B, $16,500)</b>.",
+        bullet_style,
+        margin_x,
+        y,
+        content_w,
+    )
+    y -= 7
 
     # 2. Defined Metric
     y = draw_section_header(c, "2", "Defined Metric & Data Hygiene", margin_x, y, content_w)
     y = draw_para(
         c,
-        "<b>Measure &amp; Units:</b> <b>Observed-Week Mean (AVG(Observed Passages))</b> and <b>Observed-Week Median (MEDIAN(Observed Passages))</b> measured in <b>passage events per 20-hour scheduled week</b> across 16 historical Monday weeks (<b>2026-06-08 to 2026-09-21</b>). Passage events count bidirectional line crossings (including repeat crossings) and measure <i>potential exposure</i>, not unique visitors, conversions, or revenue. "
-        "<b>Scope &amp; Fixed Cost Rule:</b> All 12 options x 16 weeks = <b>192 scheduled rows</b> (<b>184 Complete</b> totaling <b>256,773</b> passages; <b>8 Missing</b>). Single fixed 4-week cost is read via <b>MIN(Total Pilot Cost Usd)</b> (never summed across 16 weeks). "
-        "<b>Missing-Data Treatment:</b> The 8 missing rows (7 affordable: <i>L01_A</i> x2, <i>L04_A</i> x2, <i>L06_B</i> x1, <i>L02_B</i> x1, <i>L03_A</i> x1; plus <i>L05_B</i> x1) are left blank/null and excluded from Mean/Median denominators (<b>n = 14 to 16</b> complete weeks), never zero-filled. Verified starter check rows: <b>L01_A on 2026-06-08 = Complete (1,175 passages)</b>; <b>L01_A on 2026-06-29 = Missing (blank)</b>.",
-        body_style,
+        "&bull; <b>What We Measure &amp; Units:</b> Weekly foot-traffic crossings (<b>passage events per 20-hour week</b>) across 16 historical Mondays (<b>2026-06-08 to 2026-09-21</b>), summarized by both the <b>Average (AVG(Observed Passages))</b> and the <b>Typical Middle Week (MEDIAN(Observed Passages))</b>. One person walking past twice counts twice, so these measure <i>foot-traffic exposure</i>, not unique shoppers or sales.",
+        bullet_style,
         margin_x,
         y,
         content_w,
     )
-    y -= 4
+    y = draw_para(
+        c,
+        "&bull; <b>Baseline Audit &amp; Missing Weeks:</b> All 12 options x 16 weeks = <b>192 scheduled weekly rows</b>: <b>184 Complete</b> (<b>256,773</b> total passages) and <b>8 Missing</b> (7 affordable, 1 over-budget). Missing weeks mean no usable count was recorded, not zero traffic, so they are left blank and excluded from averages (<b>n = 14 to 16</b> weeks). Verified source checks: <b>L01_A on 2026-06-08 = Complete (1,175 passages)</b>; <b>L01_A on 2026-06-29 = Missing (blank)</b>. Fixed 4-week cost is read once per option via <b>MIN(Total Pilot Cost Usd)</b>.",
+        bullet_style,
+        margin_x,
+        y,
+        content_w,
+    )
+    y -= 7
 
     # 3. Preliminary Claim
-    y = draw_section_header(c, "3", "Preliminary Claim (Bounded Quantitative Evidence)", margin_x, y, content_w)
+    y = draw_section_header(c, "3", "Preliminary Claim (What Current Data Show)", margin_x, y, content_w)
     y = draw_para(
         c,
-        "Across all available complete weeks (<b>2026-06-08 to 2026-09-21</b>), <b>L01_A (Cedar Walk, Window A, $18,000, n=14)</b> leads all 8 affordable options in both <b>Observed-Week Mean (1,510.00 passages/wk)</b> and <b>Observed-Week Median (1,535.00 passages/wk)</b>, with SD = 302.58, CV = 20.04%, IQR = 477.50, and range 920-1,970 (raw sum = 21,140). "
-        "<b>L06_B (Aspen Court, Window B, $16,000, n=15)</b> ranks 2nd in Mean (<b>1,429.27</b>, raw sum = 21,439) but drops to 3rd in Median (<b>1,327.00</b>) due to extreme volatility (SD = 470.64, CV = 32.93%, IQR = 554.50, range 840-2,422). "
-        "<b>L04_A (Birch Arcade, Window A, $17,500, n=14)</b> delivers 2nd-highest affordable Median (<b>1,424.50</b>) and Mean <b>1,401.36</b> with substantially tighter consistency (SD = 204.49, CV = 14.59%, IQR = 281.75, range 978-1,721), while <b>L02_B ($16,500, n=15)</b> offers the tightest stability among top contenders (Mean 1,325.73, Median 1,316.00, CV = 9.62%).",
-        body_style,
+        "&bull; <b>L01_A Leads Full-Period Traffic ($18,000, n=14 weeks):</b> Ranks #1 among affordable sites in both <b>Average (1,510.00 passages/wk)</b> and <b>Typical Median (1,535.00 passages/wk)</b>, with raw sum = 21,140, SD = 302.58, CV = 20.04%, IQR = 477.50, and range 920-1,970.",
+        bullet_style,
         margin_x,
         y,
         content_w,
     )
-    y -= 5
+    y = draw_para(
+        c,
+        "&bull; <b>L04_A Is the Steadiest Top Contender ($17,500, n=14):</b> Saves $500 and earns the #2 affordable Median (<b>1,424.50</b>) and a <b>1,401.36</b> Average, with much smaller weekly swings (SD = 204.49, CV = 14.59%, IQR = 281.75, range 978-1,721).",
+        bullet_style,
+        margin_x,
+        y,
+        content_w,
+    )
+    y = draw_para(
+        c,
+        "&bull; <b>L06_B Is Pulled Up by Outliers ($16,000, n=15):</b> Saves $2,000 and posts raw sum 21,439 and a <b>1,429.27</b> Average, but its Typical Median drops to <b>1,327.00</b> with wide swings (SD = 470.64, CV = 32.93%, IQR = 554.50, range 840-2,422). Benchmark <b>L02_B ($16,500, n=15)</b> is very steady (CV = 9.62%) at Mean 1,325.73 / Median 1,316.00.",
+        bullet_style,
+        margin_x,
+        y,
+        content_w,
+    )
+    y -= 8
 
     # 4. Static View (Visualization)
-    chart_h = 280.0
+    chart_h = 282.0
     y = draw_static_chart(c, golden, margin_x, y, content_w, chart_h)
-    y -= 5
+    y -= 8
 
     # 5. Unresolved Question
-    y = draw_section_header(c, "5", "Unresolved Question & Diagnostic Sensitivity Preview", margin_x, y, content_w)
+    y = draw_section_header(c, "5", "Unresolved Question & Key Checks Before Final Decision", margin_x, y, content_w)
     y = draw_para(
         c,
-        "Three structural uncertainties could alter the preliminary ranking between <b>L01_A</b>, <b>L04_A</b>, and <b>L06_B</b>: "
-        "(1) <b>Non-Overlapping Missing Weeks:</b> Restricting to the <b>10 shared complete weeks</b> across all 8 affordable options (excluding 06-22, 06-29, 07-20, 08-10, 08-24, 09-07) drops four strong <i>L01_A</i> weeks and reduces <i>L01_A</i>'s mean from 1,510.00 to <b>1,407.00</b> (median 1,390.00), allowing <b>L04_A (1,449.70 mean / 1,458.50 median)</b> to overtake <i>L01_A</i>. "
-        "(2) <b>Unexplained Outlier Spikes:</b> Trimming <i>L06_B</i>'s two extreme summer spikes (<b>2,422</b> on 2026-07-06; <b>2,343</b> on 2026-08-17) lowers its <i>n=13</i> mean from 1,429.27 to <b>1,282.62</b>. "
-        "(3) <b>Early-Autumn Seasonality:</b> In the late 4 weeks (Aug 31 - Sep 21), <i>L04_A</i> averages <b>1,472.67</b> vs. <i>L01_A</i> at <b>1,370.00</b> (with an Aug 31 dip to 920).",
-        body_style,
+        "&bull; <b>10 Shared Complete Weeks:</b> Because missing dates do not overlap, comparing only the 10 weeks where all 8 affordable sites have data drops four busy <i>L01_A</i> weeks and pulls <i>L01_A</i>'s average down to <b>1,407.00</b> (median 1,390.00), letting <b>L04_A overtake it at 1,449.70 average</b> (median 1,458.50).",
+        bullet_style,
         margin_x,
         y,
         content_w,
     )
-    y -= 5
+    y = draw_para(
+        c,
+        "&bull; <b>Spikes &amp; Autumn Seasonality:</b> Removing <i>L06_B</i>'s two unexplained spikes (<b>2,422</b> on 07-06; <b>2,343</b> on 08-17) lowers its <i>n=13</i> average to <b>1,282.62</b>. In the last 4 weeks (Aug 31 - Sep 21), <i>L04_A</i> averages <b>1,472.67</b> vs. <i>L01_A</i>'s <b>1,370.00</b> (though <i>L01_A</i> rebounded to <b>1,520.00</b> across its 3 September weeks after a single 920 dip on Aug 31).",
+        bullet_style,
+        margin_x,
+        y,
+        content_w,
+    )
+    y -= 7
 
     # Suggested Narrative Template Callout Box
     tmpl_html = (
         "<b>Suggested Narrative Template (Completed):</b> &ldquo;I am deciding between "
         "<b>L01_A (Cedar Walk, Window A, $18,000)</b> and <b>L04_A (Birch Arcade, Window A, $17,500) / L06_B (Aspen Court, Window B, $16,000)</b> "
-        "for <b>evaluating passerby engagement in a 4-week reusable-goods pop-up trial (Oct 12 - Nov 8, 2026; 80 scheduled hours)</b>, "
+        "for <b>testing customer interest in a 4-week reusable-goods pop-up trial (Oct 12 - Nov 8, 2026; 80 scheduled hours)</b>, "
         "within <b>the $18,000 total pilot budget constraint</b>. Our measure is "
-        "<b>Observed-Week Mean and Median passage events per 20-hour scheduled week across Jun 8 - Sep 27, 2026 (16 historical weeks; 8 missing rows left blank and excluded from denominators, n = 14 to 16)</b>. "
-        "The view suggests <b>L01_A leads all 8 affordable options in both Mean (1,510.00) and Median (1,535.00), outperforming L06_B (1,429.27 mean / 1,327.00 median) and L04_A (1,401.36 mean / 1,424.50 median)</b>. "
-        "I still need to check <b>how shared-week missingness (10 shared weeks: L04_A 1,449.70 vs. L01_A 1,407.00), L06_B's two outlier spikes (2,422 and 2,343; trimmed mean 1,282.62), and October-November seasonality affect site stability and selection</b>.&rdquo;"
+        "<b>Average and Typical Median passage events per 20-hour scheduled week across Jun 8 - Sep 27, 2026 (16 weeks total; 8 missing rows left blank and excluded from denominators, n = 14 to 16)</b>. "
+        "The view suggests <b>L01_A leads all 8 affordable options in both Mean (1,510.00) and Median (1,535.00), ahead of L06_B (1,429.27 mean / 1,327.00 median) and L04_A (1,401.36 mean / 1,424.50 median)</b>. "
+        "I still need to check <b>how missing-week overlap (10 shared weeks: L04_A 1,449.70 vs. L01_A 1,407.00), L06_B's two summer spikes (2,422 and 2,343; trimmed mean 1,282.62), and October-November seasonality affect site stability and ranking</b>.&rdquo;"
     )
     tp = Paragraph(tmpl_html, callout_style)
     _, th = tp.wrap(content_w - 14, 200)

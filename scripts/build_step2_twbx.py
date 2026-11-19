@@ -341,6 +341,13 @@ def build_workbook() -> None:
             "pivot": "key",
             "type": "quantitative",
         },
+        "[ctd:option_id:qk]": {
+            "column": "[option_id]",
+            "derivation": "CountD",
+            "name": "[ctd:option_id:qk]",
+            "pivot": "key",
+            "type": "quantitative",
+        },
         "[sum:observed_passages:qk]": {
             "column": "[observed_passages]",
             "derivation": "Sum",
@@ -411,8 +418,14 @@ def build_workbook() -> None:
 
     # 1. Worksheet: 01 Verify the Model
     ws1_cols, ws1_cis = deps_for(
-        ["[observation_status]", "[observed_passages]", "[week_start]", CALC_SCHED_RECS],
-        ["[none:observation_status:nk]", CI_SCHED_RECS, "[cnt:observed_passages:qk]", "[sum:observed_passages:qk]"],
+        ["[observation_status]", "[observed_passages]", "[option_id]", "[week_start]", CALC_SCHED_RECS],
+        [
+            "[none:observation_status:nk]",
+            "[ctd:option_id:qk]",
+            CI_SCHED_RECS,
+            "[cnt:observed_passages:qk]",
+            "[sum:observed_passages:qk]",
+        ],
     )
     ws1 = build_worksheet(
         name="01 Verify the Model",
@@ -420,7 +433,7 @@ def build_workbook() -> None:
         dep_instances=ws1_cis,
         filters=[
             build_measure_names_filter(
-                [CI_SCHED_RECS, "[cnt:observed_passages:qk]", "[sum:observed_passages:qk]"]
+                ["[ctd:option_id:qk]", CI_SCHED_RECS, "[cnt:observed_passages:qk]", "[sum:observed_passages:qk]"]
             )
         ],
         rows_expr=fq("[none:observation_status:nk]"),
@@ -428,6 +441,7 @@ def build_workbook() -> None:
         mark_class="Text",
         encodings=[("text", fq("[Multiple Values]"))],
         text_formats=[
+            (fq("[ctd:option_id:qk]"), "n#,##0;-#,##0"),
             (fq(CI_SCHED_RECS), "n#,##0;-#,##0"),
             (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
             (fq("[sum:observed_passages:qk]"), "n#,##0;-#,##0"),
