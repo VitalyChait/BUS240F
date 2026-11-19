@@ -11,6 +11,7 @@ This project is split into **five sequential components**, each guarded by an au
 | **Component 3** | `03_Component_Checkpoint_PDF_and_Validation.md` | `Vitaly_Chait_Project_Checkpoint.pdf` | `scripts/validate_step3_checkpoint.py` | Automated (1-page PDF, template & metric audit) |
 | **Component 4** | `04_Component_Final_PDF_Package_and_Validation.md` | `Vitaly_Chait_Two_Page_Brief.pdf`<br>`Vitaly_Chait_Static_View_Backup.pdf` | `scripts/validate_step4_final_pdfs.py` | Automated (Strict 2-page check + 4-view backup audit) |
 | **Component 5** | `05_Component_Presentation_Defense_and_Validation.md` | `Deliverables/Presentation_and_Defense_Guide.md` | `scripts/validate_step5_package.py` | Automated (End-to-end 3-file final package & defense audit) |
+| **Methodology & Audit Log** | `06_Conversation_Summary_Validation_and_Methodology.md` | End-to-end engineering, pushback & validation log | Pre-LLM `.md` prep, multi-model assumption testing & iterative audits | Documentation & Audit Record |
 
 ---
 
