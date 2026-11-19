@@ -11,7 +11,7 @@ Create a rock-solid, fully populated Packaged Tableau Workbook (`Vitaly_Chait_Fi
    - **Purpose:** Baseline model verification required by Section 4 of the Data Dictionary & Starter Guide.
    - **Structure:** `Observation Status` on Rows (`Complete` = 184, `Missing` = 8), showing `Scheduled Weekly Records` (`COUNT([week_start])` = `192` total), `COUNT(Observed Passages)` (`184`), and `SUM(Observed Passages)` (`256,773` total passages across all 12 options).
 2. **`01b Option Cost & Completeness Audit`**
-   - **Purpose:** Verify all 12 candidate options (ranked via `<manual-sort>`), budget status (`Within Budget`), single fixed 4-week cost (`MIN(Total Pilot Cost Usd)`), observed weeks (`COUNT(Observed Passages)` = 14..16), and scheduled rows (`16`).
+   - **Purpose:** Verify all 12 candidate options (sorted descending by fixed cost via `<sort class='computed'>`), budget status (`Within Budget`), single fixed 4-week cost (`MIN(Total Pilot Cost Usd)`), observed weeks (`COUNT(Observed Passages)` = 14..16), and scheduled rows (`16`).
 3. **`01c Representative Source Check (L01_A)`**
    - **Purpose:** Directly verify the starter guide's two benchmark rows for `L01_A`: week starting `2026-06-08` (`Complete`, `1,175` passages) and week starting `2026-06-29` (`Missing`, blank count).
 4. **`02 Build the Decision`**
@@ -54,9 +54,9 @@ To guarantee that Tableau Desktop loads the `.twbx` without any schema errors or
          - `<datasources><datasource caption='Weekly_Activity+' name='federated.1uzq3s41802ykr10f4fc80617xzf' /></datasources>`
          - `<datasource-dependencies datasource='federated.1uzq3s41802ykr10f4fc80617xzf'>` containing:
            - Every `<column>` referenced anywhere in the worksheet (ordered before `<column-instance>`)
-           - Every `<column-instance>` referenced in `<rows>`, `<cols>`, `<encodings>`, `<filter>`, or `<manual-sort>`
+           - Every `<column-instance>` referenced in `<rows>`, `<cols>`, `<encodings>`, `<filter>`, or `<sort>`
          - Optional `<filter class='categorical' column='[federated...].[...]' ...>`
-         - Optional `<manual-sort column='[federated...].[...]' direction='ASC'><dictionary>...</dictionary></manual-sort>`
+         - Optional `<sort class='computed' column='[federated...].[...]' direction='DESC' using='[federated...].[...]' />`
          - Mandatory `<slices><column>[federated...].[...]</column></slices>` whenever one or more `<filter>` tags exist in `<view>`
          - `<aggregation value='true' />` (always last inside `<view>`)
        - `<style />`
@@ -80,9 +80,9 @@ To guarantee that Tableau Desktop loads the `.twbx` without any schema errors or
 - [ ] **Check 2.8:** All calculated `<column>` definitions have valid `<calculation class='tableau' formula='...' />` attributes and unique `[Calculation_...]` names.
 - [ ] **Check 2.9:** Every `<worksheet>` has exact child sequence `<layout-options>` (with non-empty `<title>` and `<caption>`), `<table>`, `<simple-id>`.
 - [ ] **Check 2.10:** Every `<table>` inside a worksheet has exact child sequence `<view>`, `<style>`, `<panes>`, `<rows>`, `<cols>`.
-- [ ] **Check 2.11:** Every `<view>` inside `<table>` has exact child sequence `<datasources>`, `<datasource-dependencies>` (if non-empty), `(<filter> | <manual-sort>)*`, `<slices>` (mandatory iff filters > 0), `<aggregation value='true' />`.
+- [ ] **Check 2.11:** Every `<view>` inside `<table>` has exact child sequence `<datasources>`, `<datasource-dependencies>` (if non-empty), `(<filter> | <sort>)*`, `<slices>` (mandatory iff filters > 0), `<aggregation value='true' />`.
 - [ ] **Check 2.12:** Every `<filter column='X'>` has a matching `<column>X</column>` inside `<slices>`, and vice versa.
-- [ ] **Check 2.13:** Every `[federated...].[instance]` token used in `<rows>`, `<cols>`, `<encodings>`, `<filter>`, `<manual-sort>`, or `<slices>` is declared as a `<column-instance>` in that worksheet's `<datasource-dependencies>`.
+- [ ] **Check 2.13:** Every `[federated...].[instance]` token used in `<rows>`, `<cols>`, `<encodings>`, `<filter>`, `<sort>`, or `<slices>` is declared as a `<column-instance>` in that worksheet's `<datasource-dependencies>`.
 - [ ] **Check 2.14:** Every `<column-instance column='[base_col]'>` in `<datasource-dependencies>` has its corresponding `<column name='[base_col]'>` declared in `<datasource-dependencies>` AND in the main `<datasource>`.
 - [ ] **Check 2.15:** Inside `<datasource-dependencies>`, all `<column>` elements appear before all `<column-instance>` elements.
 - [ ] **Check 2.16:** Every `<pane>` has `<view><breakdown value='auto' /></view>` and `<mark class='...' />` in the proper order before `<encodings>`.

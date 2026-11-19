@@ -202,7 +202,7 @@ def validate_twbx() -> int:
         assert view is not None
         v_tags = [c.tag for c in list(view)]
 
-        # Check 2.11: datasources, datasource-dependencies?, (filter | manual-sort)*, slices(iff filters>0), aggregation
+        # Check 2.11: datasources, datasource-dependencies?, (filter | sort)*, slices(iff filters>0), aggregation
         idx = 0
         v_valid = False
         if idx < len(v_tags) and v_tags[idx] == "datasources":
@@ -214,7 +214,7 @@ def validate_twbx() -> int:
                 else:
                     idx += 1
             flt_count = 0
-            while idx < len(v_tags) and v_tags[idx] in ("filter", "manual-sort"):
+            while idx < len(v_tags) and v_tags[idx] in ("filter", "sort"):
                 if v_tags[idx] == "filter":
                     flt_count += 1
                 idx += 1
@@ -301,10 +301,11 @@ def validate_twbx() -> int:
                 for ds_tok, inst in FED_TOKEN_RE.findall(m_attr):
                     if ds_tok == DS_NAME:
                         tokens_to_check.append(f"[{inst}]")
-        for srt in view.findall("manual-sort"):
-            for ds_tok, inst in FED_TOKEN_RE.findall(srt.attrib.get("column", "")):
-                if ds_tok == DS_NAME:
-                    tokens_to_check.append(f"[{inst}]")
+        for srt in view.findall("sort"):
+            for attr_name in ("column", "using"):
+                for ds_tok, inst in FED_TOKEN_RE.findall(srt.attrib.get(attr_name, "")):
+                    if ds_tok == DS_NAME:
+                        tokens_to_check.append(f"[{inst}]")
         if slices_el is not None:
             for sc in slices_el.findall("column"):
                 if sc.text:

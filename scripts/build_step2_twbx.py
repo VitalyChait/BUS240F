@@ -35,10 +35,6 @@ CALC_SHARED_8WK_NS = "[Calculation_2911717947329445894]"
 AFFORDABLE_OPTIONS = [
     "L01_A", "L02_A", "L02_B", "L03_A", "L03_B", "L04_A", "L06_A", "L06_B"
 ]
-RANKED_OPTIONS = [
-    "L01_A", "L06_B", "L04_A", "L02_B", "L02_A", "L06_A", "L03_B", "L03_A",
-    "L05_B", "L01_B", "L05_A", "L04_B",
-]
 
 
 def new_uuid_braced() -> str:
@@ -105,18 +101,16 @@ def build_categorical_filter(col_inst: str, members: list[str], quote_members: b
     return flt
 
 
-def build_manual_sort(col_inst: str, ordered_members: list[str]) -> ET.Element:
-    ms = ET.Element(
-        "manual-sort",
-        {"column": fq(col_inst), "direction": "ASC"},
+def build_computed_sort(col_inst: str, using_inst: str, direction: str = "DESC") -> ET.Element:
+    return ET.Element(
+        "sort",
+        {
+            "class": "computed",
+            "column": fq(col_inst),
+            "direction": direction,
+            "using": fq(using_inst),
+        },
     )
-    dct = ET.SubElement(ms, "dictionary")
-    for m in ordered_members:
-        b = ET.SubElement(dct, "bucket")
-        b.text = f'"{m}"'
-    b_all = ET.SubElement(dct, "bucket")
-    b_all.text = "%all%"
-    return ms
 
 
 def build_worksheet(
@@ -578,7 +572,7 @@ def build_workbook() -> None:
         name="01b Option Cost & Completeness Audit",
         title_text="01b Fixed 4-Week Pilot Cost & Completeness Audit (Budget Cap <= $18,000)",
         caption_text=(
-            "Options sorted by Within Budget status and observed mean passages. Single 4-week fixed pilot commitment is read via MIN(Total Pilot Cost Usd) "
+            "Options sorted by Within Budget status and fixed 4-week cost. Single 4-week fixed pilot commitment is read via MIN(Total Pilot Cost Usd) "
             "so cost is never multiplied by 16 weekly rows (8 Affordable True, 4 Over-Budget False; Observed Weeks n = 14 to 16 out of 16 scheduled)."
         ),
         dep_columns=ws1b_cols,
@@ -588,7 +582,7 @@ def build_workbook() -> None:
                 ["[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]", CI_SCHED_RECS]
             )
         ],
-        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS)],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[min:total_pilot_cost_usd:qk]", "DESC")],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -663,7 +657,7 @@ def build_workbook() -> None:
         filters=[
             build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"])
         ],
-        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS)],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -720,7 +714,7 @@ def build_workbook() -> None:
                 ]
             )
         ],
-        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS)],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -805,7 +799,7 @@ def build_workbook() -> None:
             build_categorical_filter("[none:option_id:nk]", AFFORDABLE_OPTIONS, quote_members=True),
             build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
         ],
-        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS[:8])],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
         rows_expr=(
             f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
             f"{fq('[none:window_id:nk]')}))"
@@ -852,7 +846,7 @@ def build_workbook() -> None:
             build_categorical_filter("[none:option_id:nk]", ["L01_A", "L04_A"], quote_members=True),
             build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
         ],
-        sorts=[build_manual_sort("[none:option_id:nk]", ["L01_A", "L04_A"])],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
         rows_expr=(
             f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
             f"{fq('[none:window_id:nk]')}))"
@@ -899,7 +893,7 @@ def build_workbook() -> None:
             build_categorical_filter("[none:option_id:nk]", ["L01_A", "L04_A", "L06_B", "L02_B"], quote_members=True),
             build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
         ],
-        sorts=[build_manual_sort("[none:option_id:nk]", ["L01_A", "L06_B", "L04_A", "L02_B"])],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
         rows_expr=(
             f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
             f"{fq('[none:window_id:nk]')}))"
