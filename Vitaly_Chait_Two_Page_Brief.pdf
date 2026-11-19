@@ -47,7 +47,7 @@ endobj
 endobj
 8 0 obj
 <<
-/Author (Vitaly Chait) /CreationDate (D:20261118204112-05'00') /Creator (anonymous) /Keywords () /ModDate (D:20261118204112-05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Vitaly Chait) /CreationDate (D:20261118222109-05'00') /Creator (anonymous) /Keywords () /ModDate (D:20261118222109-05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (unspecified) /Title (BUS 240F Two-Page Executive Decision Brief - Vitaly Chait) /Trapped /False
 >>
 endobj
@@ -902,7 +902,7 @@ endstream
 endobj
 11 0 obj
 <<
-/Length 17118
+/Length 17767
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -1240,44 +1240,44 @@ n 32 237.1 m 580 237.1 l S
 .796078 .835294 .882353 RG
 .8 w
 n
-36 176.6 m
-576 176.6 l
-578.2112 176.6 580 178.3888 580 180.6 c
+36 140.2 m
+576 140.2 l
+578.2112 140.2 580 141.9888 580 144.2 c
 580 230.1 l
 580 232.3112 578.2112 234.1 576 234.1 c
 36 234.1 l
 33.7888 234.1 32 232.3112 32 230.1 c
-32 180.6 l
-32 178.3888 33.7888 176.6 36 176.6 c
+32 144.2 l
+32 141.9888 33.7888 140.2 36 140.2 c
 h
 B*
 q
-1 0 0 1 39 182.6 cm
+1 0 0 1 39 146.2 cm
 q
-BT 1 0 0 1 0 38.7 Tm -0.087435 Tw 9.1 TL /F2 6.8 Tf .117647 .160784 .231373 rg (Data Check & Fixed Snapshot:) Tj /F1 6.8 Tf ( Checked all records in ) Tj /F2 6.8 Tf (BUS240F_Final_Project_Starter.twbx) Tj /F1 6.8 Tf ( \(matches raw ) Tj /F3 6.8 Tf (Candidate_Options.csv) Tj /F1 6.8 Tf ( and ) Tj /F3 6.8 Tf (Weekly_Activity.csv) Tj /F1 6.8 Tf ( 100%\): ) Tj /F2 6.8 Tf (12) Tj /F1 6.8 Tf ( options) Tj T* 0 Tw -0.054303 Tw (\() Tj /F2 6.8 Tf (8) Tj /F1 6.8 Tf ( within the ) Tj /F2 6.8 Tf ($18,000) Tj /F1 6.8 Tf ( cap, ) Tj /F2 6.8 Tf (4) Tj /F1 6.8 Tf ( over budget\) and ) Tj /F2 6.8 Tf (192) Tj /F1 6.8 Tf ( weekly rows \(2026-06-08 to 2026-09-21\) = ) Tj /F2 6.8 Tf (184 Complete) Tj /F1 6.8 Tf ( \() Tj /F2 6.8 Tf (256,773) Tj /F1 6.8 Tf ( total passages\) + ) Tj /F2 6.8 Tf (8 Missing) Tj /F1 6.8 Tf ( \(kept blank, never set to zero\).) Tj T* 0 Tw /F2 6.8 Tf (Spot Checks & Cost Rule:) Tj /F1 6.8 Tf ( Confirmed ) Tj /F2 6.8 Tf (L01_A) Tj /F1 6.8 Tf ( on ) Tj /F2 6.8 Tf (2026-06-08 = Complete \(1,175 passages\)) Tj /F1 6.8 Tf ( and ) Tj /F2 6.8 Tf (2026-06-29 = Missing \(blank\)) Tj /F1 6.8 Tf (; read single 4-week cost via ) Tj /F2 6.8 Tf (MIN\(Total Pilot) Tj T* (Cost Usd\)) Tj /F1 6.8 Tf ( so it is never multiplied by 16 weeks. ) Tj /F2 6.8 Tf (AI Assistance Disclosure:) Tj /F1 6.8 Tf ( An AI coding assistant \(Antigravity / Gemini\) helped build Python check scripts, Tableau XML files,) Tj T* (and PDF layouts; the author verified every metric against raw CSVs and inspected the workbook in Tableau Desktop.) Tj T* ET
+BT 1 0 0 1 0 75.1 Tm 9.1 TL /F1 6.8 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 6.8 Tf (Data Check & Fixed Snapshot:) Tj /F1 6.8 Tf ( Checked all records in ) Tj /F2 6.8 Tf (BUS240F_Final_Project_Starter.twbx) Tj /F1 6.8 Tf ( \(matches raw ) Tj /F3 6.8 Tf (Candidate_Options.csv) Tj /F1 6.8 Tf ( and ) Tj /F3 6.8 Tf (Weekly_Activity.csv) Tj /F1 6.8 Tf ( 100%\): ) Tj /F2 6.8 Tf (12) Tj /F1 6.8 Tf  T* (options \() Tj /F2 6.8 Tf (8) Tj /F1 6.8 Tf ( within the ) Tj /F2 6.8 Tf ($18,000) Tj /F1 6.8 Tf ( cap, ) Tj /F2 6.8 Tf (4) Tj /F1 6.8 Tf ( over budget\) and ) Tj /F2 6.8 Tf (192) Tj /F1 6.8 Tf ( weekly rows \(2026-06-08 to 2026-09-21\) = ) Tj /F2 6.8 Tf (184 Complete) Tj /F1 6.8 Tf ( \() Tj /F2 6.8 Tf (256,773) Tj /F1 6.8 Tf ( total passages\) + ) Tj /F2 6.8 Tf (8 Missing) Tj /F1 6.8 Tf ( \(kept blank, never set) Tj T* (to zero\).) Tj  T* (\177 ) Tj /F2 6.8 Tf (Spot Checks & Cost Rule:) Tj /F1 6.8 Tf ( Confirmed ) Tj /F2 6.8 Tf (L01_A) Tj /F1 6.8 Tf ( on ) Tj /F2 6.8 Tf (2026-06-08 = Complete \(1,175 passages\)) Tj /F1 6.8 Tf ( and ) Tj /F2 6.8 Tf (2026-06-29 = Missing \(blank\)) Tj /F1 6.8 Tf (; read single 4-week cost via ) Tj /F2 6.8 Tf (MIN\(Total Pilot) Tj T* (Cost Usd\)) Tj /F1 6.8 Tf ( so it is never multiplied by 16 weeks.) Tj  T* (\177 ) Tj /F2 6.8 Tf (AI Assistance Disclosure:) Tj /F1 6.8 Tf ( Project instructions and source files were transformed into ) Tj /F2 6.8 Tf (.md) Tj /F1 6.8 Tf ( files for better human and machine readability. Guided by a structured ) Tj /F2 6.8 Tf (master plan) Tj /F1 6.8 Tf (,) Tj T* (modular ) Tj /F2 6.8 Tf (subtask routines) Tj /F1 6.8 Tf (, and a ) Tj /F2 6.8 Tf (verifiable approach) Tj /F1 6.8 Tf ( designed to enable efficient ) Tj /F2 6.8 Tf (unit testing) Tj /F1 6.8 Tf (, an AI coding assistant \(Antigravity / Gemini\) helped build the Python unit tests,) Tj T* -0.091008 Tw (Tableau XML files, and PDF layouts. ) Tj /F2 6.8 Tf (I \(Vitaly\)) Tj /F1 6.8 Tf ( performed manual verification on every part, cross-checked every metric against raw CSVs, and inspected the workbook in Tableau) Tj T* 0 Tw (Desktop. Project GitHub repository: ) Tj /F2 6.8 Tf (https://github.com/VitalyChait/BUS240F) Tj /F1 6.8 Tf (.) Tj T* ET
 Q
 Q
 .105882 .211765 .364706 rg
-n 32 152.6 3 10 re f*
+n 32 116.2 3 10 re f*
 BT /F2 9 Tf 10.8 TL ET
-BT 1 0 0 1 39 154.1 Tm (Important Limits & Clear Rules for When to Switch or Wait) Tj T* ET
+BT 1 0 0 1 39 117.7 Tm (Important Limits & Clear Rules for When to Switch or Wait) Tj T* ET
 .796078 .835294 .882353 RG
 .5 w
-n 32 150.1 m 580 150.1 l S
+n 32 113.7 m 580 113.7 l S
 q
-1 0 0 1 32 128.7 cm
+1 0 0 1 32 92.3 cm
 q
 BT 1 0 0 1 10 11.5 Tm -8 0 Td 9.2 TL /F1 6.9 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 6.9 Tf (What Counts Do Not Show:) Tj /F1 6.9 Tf ( Counts measure bidirectional foot-traffic crossings \(including repeat passersby\), ) Tj /F2 6.9 Tf (not) Tj /F1 6.9 Tf ( unique shoppers, actual purchases, or profit.) Tj T* 8 0 Td (Summer-to-September history does not guarantee October-November volume, and causes of missing weeks or spikes are unknown.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 32 110.3 cm
+1 0 0 1 32 73.9 cm
 q
 BT 1 0 0 1 10 11.5 Tm -8 0 Td 9.2 TL /F1 6.9 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 6.9 Tf (Switch to L04_A \(Birch Arcade, Window A, $17,500\) if:) Tj /F1 6.9 Tf ( management values steady weekly traffic \() Tj /F2 6.9 Tf (CV < 15%) Tj /F1 6.9 Tf (; L04_A = 14.59% vs. L01_A = 20.04%\) over peak average, OR a) Tj T* 8 0 Td (quick October check shows L01_A below ) Tj /F2 6.9 Tf (1,350 passages/wk) Tj /F1 6.9 Tf ( while L04_A stays at ) Tj /F2 6.9 Tf (>) Tj (= 1,400 passages/wk) Tj /F1 6.9 Tf (.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 32 91.9 cm
+1 0 0 1 32 55.5 cm
 q
 BT 1 0 0 1 10 11.5 Tm -8 0 Td 9.2 TL /F1 6.9 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 6.9 Tf (Wait Before Launching if:) Tj /F1 6.9 Tf ( a pre-trial October spot check finds traffic under ) Tj /F2 6.9 Tf (1,100 passages/wk) Tj /F1 6.9 Tf ( at both sites, shows ) Tj /F2 6.9 Tf (> 40% repeat-crossing inflation) Tj /F1 6.9 Tf (, or uncovers unresolved) Tj T* 8 0 Td (closures explaining L01_A's missing weeks \(06-29, 08-24\).) Tj T* ET
 Q
@@ -1302,7 +1302,7 @@ xref
 trailer
 <<
 /ID 
-[<bbcd140472bdbdf1e23e68d34a859142><bbcd140472bdbdf1e23e68d34a859142>]
+[<c1df4007cbcbc0bf1fe2213f70960c79><c1df4007cbcbc0bf1fe2213f70960c79>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 8 0 R
@@ -1310,5 +1310,5 @@ trailer
 /Size 12
 >>
 startxref
-49311
+49960
 %%EOF
