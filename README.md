@@ -6,11 +6,23 @@ This repository contains the BUS 240F Final Project deliverables, reproducible b
 
 ## Project Goal
 
-Advise a fictional retailer on authorizing **one affordable location and operating window** (<= $18,000 fixed four-week budget) out of **12 candidate options** (6 locations × 2 Tue–Sat 20-hr/wk shifts) for a four-week engagement pilot (**Oct 12 – Nov 8, 2026**, `80` total hours), using **16 historical weeks** (**Jun 8 – Sep 27, 2026**; `192` rows = `184 Complete` + `8 Missing`).
+Advise a fictional retailer on authorizing **one affordable location and operating window** for a four-week pop-up engagement pilot:
 
-- **Primary Recommendation:** Authorize **`L01_A`** (Cedar Walk, Window A, `$18,000`), leading all 8 affordable options in Mean (`1,510.00` passages/wk) and Median (`1,535.00`, `n = 14`).
-- **Key Alternatives & Budget Counterfactual:** Contrasted with steady backup **`L04_A`** (`$17,500`, `CV = 14.59%`, leads shared `10-Wk` & `8-Wk non-spike` subsets) and erratic spike-driven **`L06_B`** (`$16,000`, `CV = 32.93%`), while noting **`L05_B`** (`$21,000`, `1,731.40` Mean, `CV = 10.00%`) as the **Best Overall Statistical Winner** dropped solely due to the hard `$18,000` cap.
-- **Boundaries & Decision Rules:** Explicitly distinguishes bidirectional `passage events` (exposure including repeat crossings) from unique customers or sales, and defines quantitative **Oct 6–10** pre-trial thresholds to **Switch to `L04_A`** or **Wait**.
+- **Decision Scope & Constraints:**
+  - Choose `1` option from `12` candidates (`6` locations × `2` Tue–Sat 20-hr/wk shifts)
+  - Hard 4-week budget cap: `<= $18,000`
+  - Pilot window: **Oct 12 – Nov 8, 2026** (`4` weeks, `80` total hours)
+  - Historical data: **Jun 8 – Sep 27, 2026** (`16` weeks; `192` rows = `184 Complete` + `8 Missing`)
+- **Primary Recommendation:**
+  - Authorize **`L01_A`** (Cedar Walk, Window A, `$18,000`)
+  - Ranks `#1` among all `8` affordable options in Mean (`1,510.00` passages/wk) and Median (`1,535.00`, `n = 14`)
+- **Key Alternatives & Budget Counterfactual:**
+  - **`L04_A`** (`$17,500`, `CV = 14.59%`): Steadiest affordable backup; leads shared `10-Wk` and `8-Wk non-spike` subsets
+  - **`L06_B`** (`$16,000`, `CV = 32.93%`): Spike-driven runner-up; drops to `1,282.62` mean after trimming 2 outlier weeks
+  - **`L05_B`** (`$21,000`, `1,731.40` Mean, `CV = 10.00%`): **Best Overall Statistical Winner**, excluded solely by the hard `$18,000` cap
+- **Data Boundaries & Decision Triggers:**
+  - Counts measure bidirectional `passage events` (including repeat crossings), not unique customers or sales
+  - Pre-trial **Oct 6–10** spot checks set explicit quantitative thresholds to **Switch to `L04_A`** or **Wait**
 
 ---
 
