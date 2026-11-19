@@ -365,7 +365,7 @@ def build_checkpoint_pdf() -> None:
     y = draw_section_header(c, "2", "Defined Metric & Data Hygiene", margin_x, y, content_w)
     y = draw_para(
         c,
-        "&bull; <b>What We Measure &amp; Units:</b> Weekly foot-traffic crossings (<b>passage events per 20-hour week</b>) across 16 historical Mondays (<b>2026-06-08 to 2026-09-21</b>), summarized by both the <b>Average (AVG(Observed Passages))</b> and the <b>Typical Middle Week (MEDIAN(Observed Passages))</b>. One person walking past twice counts twice, so these measure <i>foot-traffic exposure</i>, not unique shoppers or sales.",
+        "&bull; <b>What We Measure &amp; Units:</b> Weekly foot-traffic crossings (<b>passage events per 20-hour week</b>) across 16 historical Mondays (<b>2026-06-08 to 2026-09-21</b>), summarized by both the <b>Average Observed Passages</b> and the <b>Typical (Median) Middle Week Observed Passages</b>. One person walking past twice counts twice, so these measure <i>foot-traffic exposure</i>, not unique shoppers or sales.",
         bullet_style,
         margin_x,
         y,
@@ -373,7 +373,7 @@ def build_checkpoint_pdf() -> None:
     )
     y = draw_para(
         c,
-        "&bull; <b>Baseline Audit &amp; Missing Weeks:</b> All 12 options x 16 weeks = <b>192 scheduled weekly rows</b>: <b>184 Complete</b> (<b>256,773</b> total passages) and <b>8 Missing</b> (7 affordable, 1 over-budget). Missing weeks mean no usable count was recorded, not zero traffic, so they are left blank and excluded from averages (<b>n = 14 to 16</b> weeks). Verified source checks: <b>L01_A on 2026-06-08 = Complete (1,175 passages)</b>; <b>L01_A on 2026-06-29 = Missing (blank)</b>. Fixed 4-week cost is read once per option via <b>MIN(Total Pilot Cost Usd)</b>.",
+        "&bull; <b>Baseline Audit &amp; Missing Weeks:</b> All 12 options x 16 weeks = <b>192 scheduled weekly rows</b>: <b>184 Complete</b> (<b>256,773</b> total passages) and <b>8 Missing</b> (7 affordable, 1 over-budget). Missing weeks mean no usable count was recorded, not zero traffic, so they are left blank and excluded from averages (<b>n = 14 to 16</b> weeks). Verified source checks: <b>L01_A on 2026-06-08 = Complete (1,175 passages)</b>; <b>L01_A on 2026-06-29 = Missing (blank)</b>. Fixed 4-week cost is read once per option: <b>The minimum of Total Pilot Cost Usd</b>.",
         bullet_style,
         margin_x,
         y,
@@ -436,13 +436,11 @@ def build_checkpoint_pdf() -> None:
 
     # Suggested Narrative Template Callout Box
     tmpl_html = (
-        "<b>Suggested Narrative Template (Completed):</b> &ldquo;I am deciding between "
-        "<b>L01_A (Cedar Walk, Window A, $18,000)</b> and <b>L04_A (Birch Arcade, Window A, $17,500) / L06_B (Aspen Court, Window B, $16,000)</b> "
-        "for <b>testing customer interest in a 4-week reusable-goods pop-up trial (Oct 12 - Nov 8, 2026; 80 scheduled hours)</b>, "
-        "within <b>the $18,000 total pilot budget constraint</b>. Our measure is "
-        "<b>Average and Typical Median passage events per 20-hour scheduled week across Jun 8 - Sep 27, 2026 (16 weeks total; 8 missing rows left blank and excluded from denominators, n = 14 to 16)</b>. "
-        "The view suggests <b>L01_A leads all 8 affordable options in both Mean (1,510.00) and Median (1,535.00), ahead of L06_B (1,429.27 mean / 1,327.00 median) and L04_A (1,401.36 mean / 1,424.50 median)</b>. "
-        "I still need to check <b>how missing-week overlap (10 shared weeks: L04_A 1,449.70 vs. L01_A 1,407.00), L06_B's two summer spikes (2,422 and 2,343; trimmed mean 1,282.62), and October-November seasonality affect site stability and ranking</b>.&rdquo;"
+        "<b>Suggested Narrative Template (Completed):</b><br/>"
+        "&bull; <b>Decision:</b> I am deciding between <b>L01_A (Cedar Walk, Window A, $18,000)</b> and <b>L04_A (Birch Arcade, Window A, $17,500) / L06_B (Aspen Court, Window B, $16,000)</b> for <b>testing customer interest in a 4-week reusable-goods pop-up trial (Oct 12 - Nov 8, 2026; 80 scheduled hours)</b>, within <b>the $18,000 total pilot budget constraint</b>.<br/>"
+        "&bull; <b>Measurement:</b> Our measure is <b>Average and Typical Median passage events per 20-hour scheduled week across Jun 8 - Sep 27, 2026 (16 weeks total; 8 missing rows left blank and excluded from denominators, n = 14 to 16)</b>.<br/>"
+        "&bull; <b>View:</b> The view suggests <b>L01_A leads all 8 affordable options in both Mean (1,510.00) and Median (1,535.00), ahead of L06_B (1,429.27 mean / 1,327.00 median) and L04_A (1,401.36 mean / 1,424.50 median)</b>.<br/>"
+        "&bull; <b>TODO:</b> I still need to check <b>how missing-week overlap (10 shared weeks: L04_A 1,449.70 vs. L01_A 1,407.00), L06_B's two summer spikes (2,422 and 2,343; trimmed mean 1,282.62), and October-November seasonality affect site stability and ranking</b>."
     )
     tp = Paragraph(tmpl_html, callout_style)
     _, th = tp.wrap(content_w - 14, 200)

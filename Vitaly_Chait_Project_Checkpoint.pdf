@@ -37,7 +37,7 @@ endobj
 endobj
 7 0 obj
 <<
-/Author (Vitaly Chait) /CreationDate (D:20261118201154-05'00') /Creator (anonymous) /Keywords () /ModDate (D:20261118201154-05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Vitaly Chait) /CreationDate (D:20261118212621-05'00') /Creator (anonymous) /Keywords () /ModDate (D:20261118212621-05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (unspecified) /Title (BUS 240F Project Checkpoint - Vitaly Chait) /Trapped /False
 >>
 endobj
@@ -48,7 +48,7 @@ endobj
 endobj
 9 0 obj
 <<
-/Length 24995
+/Length 25194
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -106,13 +106,13 @@ n 34 631.9 m 578 631.9 l S
 q
 1 0 0 1 34 600.2 cm
 q
-BT 1 0 0 1 10 21.2 Tm -8 0 Td 9.4 TL /F1 7 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 7 Tf (What We Measure & Units:) Tj /F1 7 Tf ( Weekly foot-traffic crossings \() Tj /F2 7 Tf (passage events per 20-hour week) Tj /F1 7 Tf (\) across 16 historical Mondays \() Tj /F2 7 Tf (2026-06-08 to 2026-09-21) Tj /F1 7 Tf (\), summarized by) Tj T* 8 0 Td (both the ) Tj /F2 7 Tf (Average \(AVG\(Observed Passages\)\)) Tj /F1 7 Tf ( and the ) Tj /F2 7 Tf (Typical Middle Week \(MEDIAN\(Observed Passages\)\)) Tj /F1 7 Tf (. One person walking past twice counts twice, so these) Tj T* (measure ) Tj /F3 7 Tf (foot-traffic exposure) Tj /F1 7 Tf (, not unique shoppers or sales.) Tj T* ET
+BT 1 0 0 1 10 21.2 Tm -8 0 Td 9.4 TL /F1 7 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 7 Tf (What We Measure & Units:) Tj /F1 7 Tf ( Weekly foot-traffic crossings \() Tj /F2 7 Tf (passage events per 20-hour week) Tj /F1 7 Tf (\) across 16 historical Mondays \() Tj /F2 7 Tf (2026-06-08 to 2026-09-21) Tj /F1 7 Tf (\), summarized by) Tj T* 8 0 Td (both the ) Tj /F2 7 Tf (Average Observed Passages) Tj /F1 7 Tf ( and the ) Tj /F2 7 Tf (Typical \(Median\) Middle Week Observed Passages) Tj /F1 7 Tf (. One person walking past twice counts twice, so these measure) Tj T* /F3 7 Tf (foot-traffic exposure) Tj /F1 7 Tf (, not unique shoppers or sales.) Tj T* ET
 Q
 Q
 q
 1 0 0 1 34 562.6 cm
 q
-BT 1 0 0 1 10 30.6 Tm -8 0 Td 9.4 TL /F1 7 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 7 Tf (Baseline Audit & Missing Weeks:) Tj /F1 7 Tf ( All 12 options x 16 weeks = ) Tj /F2 7 Tf (192 scheduled weekly rows) Tj /F1 7 Tf (: ) Tj /F2 7 Tf (184 Complete) Tj /F1 7 Tf ( \() Tj /F2 7 Tf (256,773) Tj /F1 7 Tf ( total passages\) and ) Tj /F2 7 Tf (8 Missing) Tj /F1 7 Tf ( \(7 affordable, 1) Tj T* 8 0 Td (over-budget\). Missing weeks mean no usable count was recorded, not zero traffic, so they are left blank and excluded from averages \() Tj /F2 7 Tf (n = 14 to 16) Tj /F1 7 Tf ( weeks\). Verified source) Tj T* (checks: ) Tj /F2 7 Tf (L01_A on 2026-06-08 = Complete \(1,175 passages\)) Tj /F1 7 Tf (; ) Tj /F2 7 Tf (L01_A on 2026-06-29 = Missing \(blank\)) Tj /F1 7 Tf (. Fixed 4-week cost is read once per option via ) Tj /F2 7 Tf (MIN\(Total Pilot) Tj T* (Cost Usd\)) Tj /F1 7 Tf (.) Tj T* ET
+BT 1 0 0 1 10 30.6 Tm -8 0 Td 9.4 TL /F1 7 Tf .117647 .160784 .231373 rg (\177 ) Tj /F2 7 Tf (Baseline Audit & Missing Weeks:) Tj /F1 7 Tf ( All 12 options x 16 weeks = ) Tj /F2 7 Tf (192 scheduled weekly rows) Tj /F1 7 Tf (: ) Tj /F2 7 Tf (184 Complete) Tj /F1 7 Tf ( \() Tj /F2 7 Tf (256,773) Tj /F1 7 Tf ( total passages\) and ) Tj /F2 7 Tf (8 Missing) Tj /F1 7 Tf ( \(7 affordable, 1) Tj T* 8 0 Td (over-budget\). Missing weeks mean no usable count was recorded, not zero traffic, so they are left blank and excluded from averages \() Tj /F2 7 Tf (n = 14 to 16) Tj /F1 7 Tf ( weeks\). Verified source) Tj T* -0.03676 Tw (checks: ) Tj /F2 7 Tf (L01_A on 2026-06-08 = Complete \(1,175 passages\)) Tj /F1 7 Tf (; ) Tj /F2 7 Tf (L01_A on 2026-06-29 = Missing \(blank\)) Tj /F1 7 Tf (. Fixed 4-week cost is read once per option: ) Tj /F2 7 Tf (The minimum of Total) Tj T* 0 Tw (Pilot Cost Usd) Tj /F1 7 Tf (.) Tj T* ET
 Q
 Q
 .105882 .211765 .364706 rg
@@ -653,21 +653,21 @@ Q
 .121569 .380392 .552941 RG
 .9 w
 n
-38 44.2 m
-574 44.2 l
-576.2112 44.2 578 45.9888 578 48.2 c
+38 25.8 m
+574 25.8 l
+576.2112 25.8 578 27.5888 578 29.8 c
 578 114.6 l
 578 116.8112 576.2112 118.6 574 118.6 c
 38 118.6 l
 35.7888 118.6 34 116.8112 34 114.6 c
-34 48.2 l
-34 45.9888 35.7888 44.2 38 44.2 c
+34 29.8 l
+34 27.5888 35.7888 25.8 38 25.8 c
 h
 B*
 q
-1 0 0 1 41 49.2 cm
+1 0 0 1 41 30.8 cm
 q
-BT 1 0 0 1 0 57.5 Tm 9.2 TL /F2 6.9 Tf .117647 .160784 .231373 rg (Suggested Narrative Template \(Completed\):) Tj /F1 6.9 Tf ( \223) Tj (I am deciding between ) Tj /F2 6.9 Tf (L01_A \(Cedar Walk, Window A, $18,000\)) Tj /F1 6.9 Tf ( and ) Tj /F2 6.9 Tf (L04_A \(Birch Arcade, Window A, $17,500\) / L06_B) Tj T* (\(Aspen Court, Window B, $16,000\)) Tj /F1 6.9 Tf ( for ) Tj /F2 6.9 Tf (testing customer interest in a 4-week reusable-goods pop-up trial \(Oct 12 - Nov 8, 2026; 80 scheduled hours\)) Tj /F1 6.9 Tf (, within ) Tj /F2 6.9 Tf (the) Tj T* ($18,000 total pilot budget constraint) Tj /F1 6.9 Tf (. Our measure is ) Tj /F2 6.9 Tf (Average and Typical Median passage events per 20-hour scheduled week across Jun 8 - Sep 27, 2026 \(16) Tj T* (weeks total; 8 missing rows left blank and excluded from denominators, n = 14 to 16\)) Tj /F1 6.9 Tf (. The view suggests ) Tj /F2 6.9 Tf (L01_A leads all 8 affordable options in both Mean) Tj T* (\(1,510.00\) and Median \(1,535.00\), ahead of L06_B \(1,429.27 mean / 1,327.00 median\) and L04_A \(1,401.36 mean / 1,424.50 median\)) Tj /F1 6.9 Tf (. I still need to check ) Tj /F2 6.9 Tf (how) Tj T* (missing-week overlap \(10 shared weeks: L04_A 1,449.70 vs. L01_A 1,407.00\), L06_B's two summer spikes \(2,422 and 2,343; trimmed mean 1,282.62\), and) Tj T* (October-November seasonality affect site stability and ranking) Tj /F1 6.9 Tf (.) Tj (\224) Tj T* ET
+BT 1 0 0 1 0 75.9 Tm 9.2 TL /F2 6.9 Tf .117647 .160784 .231373 rg (Suggested Narrative Template \(Completed\):) Tj /F1 6.9 Tf  T* -0.03268 Tw (\177 ) Tj /F2 6.9 Tf (Decision:) Tj /F1 6.9 Tf ( I am deciding between ) Tj /F2 6.9 Tf (L01_A \(Cedar Walk, Window A, $18,000\)) Tj /F1 6.9 Tf ( and ) Tj /F2 6.9 Tf (L04_A \(Birch Arcade, Window A, $17,500\) / L06_B \(Aspen Court, Window B, $16,000\)) Tj /F1 6.9 Tf  T* 0 Tw (for ) Tj /F2 6.9 Tf (testing customer interest in a 4-week reusable-goods pop-up trial \(Oct 12 - Nov 8, 2026; 80 scheduled hours\)) Tj /F1 6.9 Tf (, within ) Tj /F2 6.9 Tf (the $18,000 total pilot budget constraint) Tj /F1 6.9 Tf (.) Tj  T* (\177 ) Tj /F2 6.9 Tf (Measurement:) Tj /F1 6.9 Tf ( Our measure is ) Tj /F2 6.9 Tf (Average and Typical Median passage events per 20-hour scheduled week across Jun 8 - Sep 27, 2026 \(16 weeks total; 8 missing) Tj T* (rows left blank and excluded from denominators, n = 14 to 16\)) Tj /F1 6.9 Tf (.) Tj  T* (\177 ) Tj /F2 6.9 Tf (View:) Tj /F1 6.9 Tf ( The view suggests ) Tj /F2 6.9 Tf (L01_A leads all 8 affordable options in both Mean \(1,510.00\) and Median \(1,535.00\), ahead of L06_B \(1,429.27 mean / 1,327.00 median\)) Tj T* (and L04_A \(1,401.36 mean / 1,424.50 median\)) Tj /F1 6.9 Tf (.) Tj  T* (\177 ) Tj /F2 6.9 Tf (TODO:) Tj /F1 6.9 Tf ( I still need to check ) Tj /F2 6.9 Tf (how missing-week overlap \(10 shared weeks: L04_A 1,449.70 vs. L01_A 1,407.00\), L06_B's two summer spikes \(2,422 and 2,343;) Tj T* (trimmed mean 1,282.62\), and October-November seasonality affect site stability and ranking) Tj /F1 6.9 Tf (.) Tj T* ET
 Q
 Q
  
@@ -688,7 +688,7 @@ xref
 trailer
 <<
 /ID 
-[<aefc6683fd3742664e03e22d8ad31fe8><aefc6683fd3742664e03e22d8ad31fe8>]
+[<8ee44c795fa02ab342cf61a06f51f8f1><8ee44c795fa02ab342cf61a06f51f8f1>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 7 0 R
@@ -696,5 +696,5 @@ trailer
 /Size 10
 >>
 startxref
-26111
+26310
 %%EOF
