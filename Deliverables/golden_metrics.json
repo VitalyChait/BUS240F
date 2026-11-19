@@ -56,6 +56,20 @@
         "2026-08-24",
         "2026-09-07"
       ],
+      "pairwise_12wk_dates": [
+        "2026-06-08",
+        "2026-06-15",
+        "2026-07-06",
+        "2026-07-13",
+        "2026-07-20",
+        "2026-07-27",
+        "2026-08-03",
+        "2026-08-10",
+        "2026-08-17",
+        "2026-08-31",
+        "2026-09-14",
+        "2026-09-21"
+      ],
       "late_4wk_dates": [
         "2026-08-31",
         "2026-09-07",
@@ -67,6 +81,79 @@
         "2026-09-14",
         "2026-09-21"
       ]
+    },
+    "pairwise_L01A_L04A": {
+      "obs_weeks": 12,
+      "dates": [
+        "2026-06-08",
+        "2026-06-15",
+        "2026-07-06",
+        "2026-07-13",
+        "2026-07-20",
+        "2026-07-27",
+        "2026-08-03",
+        "2026-08-10",
+        "2026-08-17",
+        "2026-08-31",
+        "2026-09-14",
+        "2026-09-21"
+      ],
+      "L01_A_mean": 1482.08,
+      "L01_A_median": 1512.5,
+      "L04_A_mean": 1388.25,
+      "L04_A_median": 1407.0,
+      "L01_A_weekly_wins": 6,
+      "L04_A_weekly_wins": 6,
+      "listwise_excluded_pairwise_dates": [
+        "2026-07-06",
+        "2026-07-20",
+        "2026-08-10",
+        "2026-08-17"
+      ]
+    },
+    "window_b_vs_a_by_location": {
+      "L01": {
+        "location_name": "Cedar Walk",
+        "win_a_mean": 1510.0,
+        "win_b_mean": 1630.88,
+        "mean_diff_b_minus_a": 120.88,
+        "cost_diff_b_minus_a": 1500
+      },
+      "L02": {
+        "location_name": "Maple Court",
+        "win_a_mean": 1250.56,
+        "win_b_mean": 1325.73,
+        "mean_diff_b_minus_a": 75.17,
+        "cost_diff_b_minus_a": 1500
+      },
+      "L03": {
+        "location_name": "Willow Square",
+        "win_a_mean": 1080.73,
+        "win_b_mean": 1157.44,
+        "mean_diff_b_minus_a": 76.71,
+        "cost_diff_b_minus_a": 1500
+      },
+      "L04": {
+        "location_name": "Birch Arcade",
+        "win_a_mean": 1401.36,
+        "win_b_mean": 1469.69,
+        "mean_diff_b_minus_a": 68.33,
+        "cost_diff_b_minus_a": 1000
+      },
+      "L05": {
+        "location_name": "Juniper Row",
+        "win_a_mean": 1603.19,
+        "win_b_mean": 1731.4,
+        "mean_diff_b_minus_a": 128.21,
+        "cost_diff_b_minus_a": 2000
+      },
+      "L06": {
+        "location_name": "Aspen Court",
+        "win_a_mean": 1169.94,
+        "win_b_mean": 1429.27,
+        "mean_diff_b_minus_a": 259.33,
+        "cost_diff_b_minus_a": 1500
+      }
     }
   },
   "options": {
@@ -94,6 +181,8 @@
       "iqr": 477.5,
       "min": 920,
       "max": 1970,
+      "rolling_4wk_min_mean": 1236.67,
+      "rolling_4wk_max_mean": 1790.0,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1407.0,
       "shared_10wk_median": 1390.0,
@@ -133,6 +222,8 @@
       "iqr": 554.5,
       "min": 840,
       "max": 2422,
+      "rolling_4wk_min_mean": 1203.25,
+      "rolling_4wk_max_mean": 1720.0,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1619.1,
       "shared_10wk_median": 1576.0,
@@ -187,6 +278,8 @@
       "iqr": 281.75,
       "min": 978,
       "max": 1721,
+      "rolling_4wk_min_mean": 1285.75,
+      "rolling_4wk_max_mean": 1516.67,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1449.7,
       "shared_10wk_median": 1458.5,
@@ -226,6 +319,8 @@
       "iqr": 161.0,
       "min": 1120,
       "max": 1592,
+      "rolling_4wk_min_mean": 1281.25,
+      "rolling_4wk_max_mean": 1432.33,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1304.1,
       "shared_10wk_median": 1308.0,
@@ -263,6 +358,8 @@
       "iqr": 112.5,
       "min": 1110,
       "max": 1457,
+      "rolling_4wk_min_mean": 1225.75,
+      "rolling_4wk_max_mean": 1304.75,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1239.4,
       "shared_10wk_median": 1240.0,
@@ -300,6 +397,8 @@
       "iqr": 267.5,
       "min": 915,
       "max": 1390,
+      "rolling_4wk_min_mean": 1101.5,
+      "rolling_4wk_max_mean": 1235.25,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1240.6,
       "shared_10wk_median": 1300.0,
@@ -337,6 +436,8 @@
       "iqr": 250.5,
       "min": 943,
       "max": 1426,
+      "rolling_4wk_min_mean": 1092.5,
+      "rolling_4wk_max_mean": 1242.0,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1172.1,
       "shared_10wk_median": 1204.0,
@@ -376,6 +477,8 @@
       "iqr": 182.5,
       "min": 934,
       "max": 1263,
+      "rolling_4wk_min_mean": 1032.25,
+      "rolling_4wk_max_mean": 1139.75,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1089.2,
       "shared_10wk_median": 1123.0,
@@ -415,6 +518,8 @@
       "iqr": 220.0,
       "min": 1490,
       "max": 2053,
+      "rolling_4wk_min_mean": 1668.75,
+      "rolling_4wk_max_mean": 1790.0,
       "shared_10wk_obs": 9,
       "shared_10wk_mean": 1744.11,
       "shared_10wk_median": 1781.0,
@@ -452,6 +557,8 @@
       "iqr": 509.25,
       "min": 1035,
       "max": 2237,
+      "rolling_4wk_min_mean": 1478.0,
+      "rolling_4wk_max_mean": 1786.25,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1536.1,
       "shared_10wk_median": 1511.0,
@@ -489,6 +596,8 @@
       "iqr": 217.0,
       "min": 1365,
       "max": 1878,
+      "rolling_4wk_min_mean": 1539.0,
+      "rolling_4wk_max_mean": 1670.0,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1605.9,
       "shared_10wk_median": 1574.0,
@@ -526,6 +635,8 @@
       "iqr": 313.25,
       "min": 992,
       "max": 1884,
+      "rolling_4wk_min_mean": 1357.5,
+      "rolling_4wk_max_mean": 1598.75,
       "shared_10wk_obs": 10,
       "shared_10wk_mean": 1546.6,
       "shared_10wk_median": 1525.5,

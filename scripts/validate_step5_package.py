@@ -164,21 +164,30 @@ def validate_package() -> int:
         if missing_here:
             inconsistencies.append(f"{label} missing {missing_here}")
 
-    # Also confirm 8-week non-spike & September 3-week benchmarks across Brief, Backup, and Defense Guide
+    # Also confirm 8-week non-spike, September 3-week, and 12-week pairwise benchmarks across deliverables
     post_checkpoint_metrics = [
         f"{opts['L04_A']['shared_8wk_nonspike_mean']:,.2f}",  # 1,497.12
         f"{opts['L06_B']['shared_8wk_nonspike_mean']:,.2f}",  # 1,428.25
         f"{opts['L01_A']['shared_8wk_nonspike_mean']:,.2f}",  # 1,368.75
         f"{opts['L01_A']['sep_3wk_mean']:,.2f}",              # 1,520.00
+        f"{opts['L04_A']['sep_3wk_mean']:,.2f}",              # 1,459.00
+        f"{meta['pairwise_L01A_L04A']['L01_A_mean']:,.2f}",   # 1,482.08
+        f"{meta['pairwise_L01A_L04A']['L04_A_mean']:,.2f}",   # 1,388.25
     ]
     for label, txt in [
+        ("Checkpoint_PDF", cp_text),
         ("Two_Page_Brief_PDF", br_text),
         ("Static_View_Backup_PDF", bk_text),
         ("Presentation_and_Defense_Guide.md", guide_text),
     ]:
-        miss_pc = [m for m in post_checkpoint_metrics if m not in txt]
+        # Checkpoint intentionally stops at 10-wk, 12-wk pairwise & Sep rebound; Brief/Backup/Guide also cover 8-wk non-spike
+        req_here = post_checkpoint_metrics[3:] if label == "Checkpoint_PDF" else post_checkpoint_metrics
+        miss_pc = [m for m in req_here if m not in txt]
         if miss_pc:
             inconsistencies.append(f"{label} missing {miss_pc}")
+        for bad in ["5 slowest weeks", "5 lowest summer weeks"]:
+            if bad in txt:
+                inconsistencies.append(f"{label} contains inaccurate phrase: {bad!r}")
 
     # Also confirm exact numbers in defense guide for Q&A benchmarks
     extra_guide = [
@@ -191,6 +200,12 @@ def validate_package() -> int:
         f"{opts['L04_A']['shared_9wk_mean']:,.2f}",
         f"{opts['L01_A']['shared_9wk_mean']:,.2f}",
         f"{opts['L04_A']['shared_8wk_nonspike_median']:,.2f}",
+        f"{meta['pairwise_L01A_L04A']['L01_A_median']:,.2f}",
+        f"{meta['pairwise_L01A_L04A']['L04_A_median']:,.2f}",
+        f"{opts['L01_A']['rolling_4wk_min_mean']:,.2f}",
+        f"{opts['L01_A']['rolling_4wk_max_mean']:,.2f}",
+        f"{opts['L04_A']['rolling_4wk_min_mean']:,.2f}",
+        f"{opts['L04_A']['rolling_4wk_max_mean']:,.2f}",
         "21,140",
         "21,439",
         "19,619",

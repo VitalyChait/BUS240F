@@ -96,7 +96,7 @@ def draw_static_chart(
     c.drawString(
         x + pad,
         y_top - 22.5,
-        "Units: Passage events / 20-hr scheduled week (Tue-Sat) | 8 Missing weeks excluded (n=14..16) | Budget Cap <= $18,000",
+        "Units: Passage events / 20-hr Tue-Sat week | All 12 options (8 Affordable <= $18k, 4 Over-Budget) | 8 Missing weeks excluded (n=14-16)",
     )
 
     # Legend (top-right)
@@ -329,7 +329,7 @@ def build_checkpoint_pdf() -> None:
     c.drawString(
         margin_x + 10,
         y - 25.0,
-        "Author: Vitaly Chait  |  Snapshot: BUS240F_Final_Project_Starter.twbx  |  Historical Data: Jun 8 - Sep 27, 2026 (16 Weeks)  |  Trial: Oct 12 - Nov 8, 2026",
+        "Author: Vitaly Chait (Team Deliverable)  |  Snapshot: BUS240F_Final_Project_Starter.twbx  |  Jun 8 - Sep 27, 2026 (16 Wks)  |  Trial: Oct 12 - Nov 8, 2026",
     )
     y -= 40
 
@@ -359,13 +359,13 @@ def build_checkpoint_pdf() -> None:
         y,
         content_w,
     )
-    y -= 7
+    y -= 6
 
     # 2. Defined Metric
     y = draw_section_header(c, "2", "Defined Metric & Data Hygiene", margin_x, y, content_w)
     y = draw_para(
         c,
-        "&bull; <b>What We Measure &amp; Units:</b> Weekly foot-traffic crossings (<b>passage events per 20-hour week</b>) across 16 historical Mondays (<b>2026-06-08 to 2026-09-21</b>), summarized by both the <b>Average Observed Passages</b> and the <b>Typical (Median) Middle Week Observed Passages</b>. One person walking past twice counts twice, so these measure <i>foot-traffic exposure</i>, not unique shoppers or sales.",
+        "&bull; <b>What We Measure &amp; Units:</b> Weekly foot-traffic crossings (<b>passage events per 20-hour Tue-Sat week</b>) across 16 weekly periods (Week Start Mondays <b>2026-06-08 to 2026-09-21</b>, covering Jun 8 - Sep 27, 2026), summarized by both the <b>Average Observed Passages</b> and the <b>Typical (Median) Middle Week Observed Passages</b>. One person walking past twice counts twice, so these measure <i>foot-traffic exposure</i>, not unique shoppers or sales.",
         bullet_style,
         margin_x,
         y,
@@ -373,19 +373,19 @@ def build_checkpoint_pdf() -> None:
     )
     y = draw_para(
         c,
-        "&bull; <b>Baseline Audit &amp; Missing Weeks:</b> All 12 options x 16 weeks = <b>192 scheduled weekly rows</b>: <b>184 Complete</b> (<b>256,773</b> total passages) and <b>8 Missing</b> (7 affordable, 1 over-budget). Missing weeks mean no usable count was recorded, not zero traffic, so they are left blank and excluded from averages (<b>n = 14 to 16</b> weeks). Verified source checks: <b>L01_A on 2026-06-08 = Complete (1,175 passages)</b>; <b>L01_A on 2026-06-29 = Missing (blank)</b>. Fixed 4-week cost is read once per option: <b>The minimum of Total Pilot Cost Usd</b>.",
+        "&bull; <b>Baseline Audit &amp; Missing Weeks:</b> All 12 options x 16 weeks = <b>192 scheduled weekly rows</b>: <b>184 Complete</b> (<b>256,773</b> total passages) and <b>8 Missing</b> (7 affordable, 1 over-budget). Missing weeks mean no usable count was recorded, not zero traffic, so they are left blank and excluded from averages (<b>n = 14 to 16</b> complete weeks). Verified source checks: <b>L01_A on 2026-06-08 = Complete (1,175 passages)</b>; <b>L01_A on 2026-06-29 = Missing (blank)</b>. Fixed 4-week cost is read once per option: <b>The minimum of Total Pilot Cost Usd</b>.",
         bullet_style,
         margin_x,
         y,
         content_w,
     )
-    y -= 7
+    y -= 6
 
     # 3. Preliminary Claim
-    y = draw_section_header(c, "3", "Preliminary Claim (What Current Data Show)", margin_x, y, content_w)
+    y = draw_section_header(c, "3", "Preliminary Claim (What Current Data Shows)", margin_x, y, content_w)
     y = draw_para(
         c,
-        "&bull; <b>L01_A Leads Full-Period Traffic ($18,000, n=14 weeks):</b> Ranks #1 among affordable sites in both <b>Average (1,510.00 passages/wk)</b> and <b>Typical Median (1,535.00 passages/wk)</b>, with raw sum = 21,140, SD = 302.58, CV = 20.04%, IQR = 477.50, and range 920-1,970.",
+        "&bull; <b>L01_A Leads Full-Period Traffic ($18,000, n=14 complete weeks):</b> Ranks #1 among affordable sites in both <b>Average (1,510.00 passages/wk)</b> and <b>Typical Median (1,535.00 passages/wk)</b>, with raw sum = 21,140, Standard Deviation (SD) = 302.58, Coefficient of Variation (CV) = 20.04%, Interquartile Range (IQR, continuous) = 477.50, and range 920-1,970.",
         bullet_style,
         margin_x,
         y,
@@ -393,7 +393,7 @@ def build_checkpoint_pdf() -> None:
     )
     y = draw_para(
         c,
-        "&bull; <b>L04_A Is the Steadiest Top Contender ($17,500, n=14):</b> Saves $500 and earns the #2 affordable Median (<b>1,424.50</b>) and a <b>1,401.36</b> Average, with much smaller weekly swings (SD = 204.49, CV = 14.59%, IQR = 281.75, range 978-1,721).",
+        "&bull; <b>L04_A Is the Steadiest Top Contender ($17,500, n=14):</b> Saves $500 and earns the #2 affordable Median (<b>1,424.50</b>) and a <b>1,401.36</b> Average, with smaller weekly swings (SD = 204.49, CV = 14.59%, IQR = 281.75, range 978-1,721).",
         bullet_style,
         margin_x,
         y,
@@ -407,18 +407,18 @@ def build_checkpoint_pdf() -> None:
         y,
         content_w,
     )
-    y -= 8
+    y -= 7
 
     # 4. Static View (Visualization)
-    chart_h = 282.0
+    chart_h = 266.0
     y = draw_static_chart(c, golden, margin_x, y, content_w, chart_h)
-    y -= 8
+    y -= 7
 
     # 5. Unresolved Question
     y = draw_section_header(c, "5", "Unresolved Question & Key Checks Before Final Decision", margin_x, y, content_w)
     y = draw_para(
         c,
-        "&bull; <b>10 Shared Complete Weeks:</b> Because missing dates do not overlap, comparing only the 10 weeks where all 8 affordable sites have data drops four busy <i>L01_A</i> weeks and pulls <i>L01_A</i>'s average down to <b>1,407.00</b> (median 1,390.00), letting <b>L04_A overtake it at 1,449.70 average</b> (median 1,458.50).",
+        "&bull; <b>Shared-Week Overlap (10-Wk All-Affordable vs. 12-Wk Pairwise):</b> Excluding all 6 missing-overlap dates across the 8 affordable sites drops L01_A's average to <b>1,407.00</b> (median 1,390.00), letting <b>L04_A lead at 1,449.70</b> (median 1,458.50). However, 2 excluded dates (07-20, 08-10) came from other sites while L01_A and L04_A share <b>12 pairwise weeks</b> where L01_A leads <b>1,482.08 vs. 1,388.25</b> (6-6 weekly wins).",
         bullet_style,
         margin_x,
         y,
@@ -426,21 +426,21 @@ def build_checkpoint_pdf() -> None:
     )
     y = draw_para(
         c,
-        "&bull; <b>Spikes &amp; Autumn Seasonality:</b> Removing <i>L06_B</i>'s two unexplained spikes (<b>2,422</b> on 07-06; <b>2,343</b> on 08-17) lowers its <i>n=13</i> average to <b>1,282.62</b>. In the last 4 weeks (Aug 31 - Sep 21), <i>L04_A</i> averages <b>1,472.67</b> vs. <i>L01_A</i>'s <b>1,370.00</b> (though <i>L01_A</i> rebounded to <b>1,520.00</b> across its 3 September weeks after a single 920 dip on Aug 31).",
+        "&bull; <b>Spikes &amp; Autumn Seasonality:</b> Removing <i>L06_B</i>'s two unexplained spikes (<b>2,422</b> on 07-06; <b>2,343</b> on 08-17) lowers its <i>n=13</i> average to <b>1,282.62</b>. Over the last 4 weeks (Aug 31 - Sep 21), <i>L04_A</i> averages <b>1,472.67</b> vs. <i>L01_A</i> <b>1,370.00</b>, yet across the 3 September weeks alone <i>L01_A</i> rebounded to <b>1,520.00</b> (<i>n=3</i>) vs. <i>L04_A</i> <b>1,459.00</b> (<i>n=2</i>).",
         bullet_style,
         margin_x,
         y,
         content_w,
     )
-    y -= 7
+    y -= 6
 
     # Suggested Narrative Template Callout Box
     tmpl_html = (
         "<b>Suggested Narrative Template (Completed):</b><br/>"
         "&bull; <b>Decision:</b> I am deciding between <b>L01_A (Cedar Walk, Window A, $18,000)</b> and <b>L04_A (Birch Arcade, Window A, $17,500) / L06_B (Aspen Court, Window B, $16,000)</b> for <b>testing customer interest in a 4-week reusable-goods pop-up trial (Oct 12 - Nov 8, 2026; 80 scheduled hours)</b>, within <b>the $18,000 total pilot budget constraint</b>.<br/>"
-        "&bull; <b>Measurement:</b> Our measure is <b>Average and Typical Median passage events per 20-hour scheduled week across Jun 8 - Sep 27, 2026 (16 weeks total; 8 missing rows left blank and excluded from denominators, n = 14 to 16)</b>.<br/>"
+        "&bull; <b>Measurement:</b> Our measure is <b>Average and Typical Median passage events per 20-hour Tue-Sat week across Jun 8 - Sep 27, 2026 (16 weeks total; 8 missing rows left blank and excluded from denominators, n = 14 to 16)</b>.<br/>"
         "&bull; <b>View:</b> The view suggests <b>L01_A leads all 8 affordable options in both Mean (1,510.00) and Median (1,535.00), ahead of L06_B (1,429.27 mean / 1,327.00 median) and L04_A (1,401.36 mean / 1,424.50 median)</b>.<br/>"
-        "&bull; <b>TODO:</b> I still need to check <b>how missing-week overlap (10 shared weeks: L04_A 1,449.70 vs. L01_A 1,407.00), L06_B's two summer spikes (2,422 and 2,343; trimmed mean 1,282.62), and October-November seasonality affect site stability and ranking</b>."
+        "&bull; <b>TODO:</b> I still need to check <b>listwise vs. pairwise missing-week effects (10-wk: L04_A 1,449.70 vs. L01_A 1,407.00; 12-wk pairwise: 1,482.08 vs. 1,388.25), L06_B's two spikes (2,422 and 2,343; trimmed 1,282.62), and October-November seasonality</b>."
     )
     tp = Paragraph(tmpl_html, callout_style)
     _, th = tp.wrap(content_w - 14, 200)

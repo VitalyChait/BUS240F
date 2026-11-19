@@ -164,6 +164,13 @@ def validate_final_pdfs() -> int:
             f"{opts['L06_B']['spike_trimmed']['mean']:,.2f}",
             f"{opts['L06_B']['spike_trimmed']['median']:,.2f}",
             f"{opts['L06_B']['spike_trimmed']['sd']:.2f}",
+            f"{opts['L04_A']['shared_8wk_nonspike_mean']:,.2f}",
+            f"{opts['L06_B']['shared_8wk_nonspike_mean']:,.2f}",
+            f"{opts['L01_A']['shared_8wk_nonspike_mean']:,.2f}",
+            f"{opts['L01_A']['sep_3wk_mean']:,.2f}",
+            f"{opts['L04_A']['sep_3wk_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['L01_A_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['L04_A_mean']:,.2f}",
         ]
     )
 
@@ -192,18 +199,30 @@ def validate_final_pdfs() -> int:
                 f"{o['late_4wk_mean']:,.2f}",
             ]
         )
-    backup_reqs.extend(["2,422", "2,343", "1,282.62", "1,274.00", "288.83"])
+    backup_reqs.extend(
+        [
+            "2,422", "2,343", "1,282.62", "1,274.00", "288.83",
+            f"{opts['L04_A']['shared_8wk_nonspike_mean']:,.2f}",
+            f"{opts['L06_B']['shared_8wk_nonspike_mean']:,.2f}",
+            f"{opts['L01_A']['shared_8wk_nonspike_mean']:,.2f}",
+            f"{opts['L01_A']['sep_3wk_mean']:,.2f}",
+            f"{opts['L04_A']['sep_3wk_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['L01_A_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['L04_A_mean']:,.2f}",
+        ]
+    )
 
     miss_brief = [t for t in dict.fromkeys(brief_reqs) if t not in brief_text]
     miss_backup = [t for t in dict.fromkeys(backup_reqs) if t not in backup_text]
-    c44 = len(miss_brief) == 0 and len(miss_backup) == 0
+    bad_claims = [c for c in ["L06_B's 5 slowest weeks", "L06_B's 5 lowest"] if c in brief_text or c in backup_text]
+    c44 = len(miss_brief) == 0 and len(miss_backup) == 0 and len(bad_claims) == 0
     checks.append(
         (
             "Check 4.4 (Metric Parity)",
             c44,
-            "100% metric parity across Two-Page Brief & 4-View Backup"
+            "100% metric & claim parity across Two-Page Brief & 4-View Backup"
             if c44
-            else f"miss_brief={miss_brief[:8]}, miss_backup={miss_backup[:8]}",
+            else f"miss_brief={miss_brief[:8]}, miss_backup={miss_backup[:8]}, bad_claims={bad_claims}",
         )
     )
 

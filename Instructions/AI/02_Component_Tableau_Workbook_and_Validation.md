@@ -5,21 +5,27 @@ Create a rock-solid, fully populated Packaged Tableau Workbook (`Vitaly_Chait_Fi
 
 ---
 
-## Planned Worksheets in `Vitaly_Chait_Final_Project_Workbook.twbx`
+## Planned Worksheets in `Vitaly_Chait_Final_Project_Workbook.twbx` (9 Worksheets with Titles, Captions & Ranked Sorts)
 
 1. **`01 Verify the Model`**
    - **Purpose:** Baseline model verification required by Section 4 of the Data Dictionary & Starter Guide.
-   - **Structure:** `Observation Status` on Rows (`Complete` = 184, `Missing` = 8), showing `Weekly_Activity.csv (Count)` (`192` total), `COUNT(Observed Passages)` (`184`), and `SUM(Observed Passages)` (`256,773` total passages across all 12 options).
+   - **Structure:** `Observation Status` on Rows (`Complete` = 184, `Missing` = 8), showing `Scheduled Weekly Records` (`COUNT([week_start])` = `192` total), `COUNT(Observed Passages)` (`184`), and `SUM(Observed Passages)` (`256,773` total passages across all 12 options).
 2. **`01b Option Cost & Completeness Audit`**
-   - **Purpose:** Verify all 12 candidate options, their budget status (`Within Budget`), single fixed 4-week cost (`MIN(Total Pilot Cost Usd)` — demonstrating cost is not multiplied by 16), observed weeks (`COUNT(Observed Passages)` = 14..16), and total scheduled rows (`16`).
+   - **Purpose:** Verify all 12 candidate options (ranked via `<manual-sort>`), budget status (`Within Budget`), single fixed 4-week cost (`MIN(Total Pilot Cost Usd)`), observed weeks (`COUNT(Observed Passages)` = 14..16), and scheduled rows (`16`).
 3. **`01c Representative Source Check (L01_A)`**
    - **Purpose:** Directly verify the starter guide's two benchmark rows for `L01_A`: week starting `2026-06-08` (`Complete`, `1,175` passages) and week starting `2026-06-29` (`Missing`, blank count).
 4. **`02 Build the Decision`**
-   - **Purpose:** Primary decision view comparing all 12 candidate options grouped by `Within Budget` (`True` vs. `False`), displaying `AVG(Observed Passages)` (Observed-Week Mean), `MEDIAN(Observed Passages)` (Observed-Week Median), `MIN(Total Pilot Cost Usd)` (Fixed 4-Week Cost), and `COUNT(Observed Passages)` ($n_i$ complete weeks).
-5. **`03 Weekly Trajectory & Outliers`**
-   - **Purpose:** Weekly time-series across the 16 historical weeks (`2026-06-08` to `2026-09-21`) by option, visually revealing `L06_B`'s two extreme spikes (`2,422` on `2026-07-06` and `2,343` on `2026-08-17`), `L01_A`'s late-August dip (`920` on `2026-08-31`), `L04_A`'s steady corridor (`978–1,721`), and blank gaps for missing weeks.
-6. **`04 Shared-Week Sensitivity Test`**
-   - **Purpose:** Tests the consequential analytical change recommended by Section 5 of the Starter Guide — filtering to the **10 shared complete weeks** across all 8 affordable options (using calculated field `Shared 10-Week Affordable Flag`, which excludes `2026-06-22`, `2026-06-29`, `2026-07-20`, `2026-08-10`, `2026-08-24`, `2026-09-07`), showing how `L04_A` (`1,449.70` mean / `1,458.50` median) overtakes `L01_A` (`1,407.00` mean / `1,390.00` median).
+   - **Purpose:** Primary decision bar view comparing all 12 candidate options grouped by `Within Budget` (`True` vs. `False`, sorted descending by performance), displaying `AVG(Observed Passages)`, `MEDIAN(Observed Passages)`, with `Weekly SD`, `Weekly CV`, `MIN(Total Pilot Cost Usd)`, and `COUNT(Observed Passages)` in tooltip/LOD.
+5. **`02b Dispersion & Cost Metrics Table`**
+   - **Purpose:** Exact numerical cross-tab showing `MIN(Total Pilot Cost Usd)`, `COUNT(Observed Passages)`, `AVG`, `MEDIAN`, `Weekly SD`, and `Weekly CV` in ranked order matching the Two-Page Brief.
+6. **`03 Weekly Trajectory & Outliers`**
+   - **Purpose:** Weekly time-series across the 16 historical weeks (`2026-06-08` to `2026-09-21`, covering `Jun 8 – Sep 27, 2026`) filtered to the 8 affordable options, visually revealing `L06_B`'s two extreme spikes (`2,422` and `2,343`), `L01_A`'s `08-31` dip (`920`), and missing-week breaks.
+7. **`04 Shared-Week Sensitivity Test`**
+   - **Purpose:** Tests the 10-week all-affordable subset (`Shared 10-Week Affordable Flag`), showing `L04_A` (`1,449.70`) overtaking `L01_A` (`1,407.00`) when all 6 missing-overlap dates are removed.
+8. **`04b Pairwise L01_A vs L04_A (12 Wk)`**
+   - **Purpose:** Direct head-to-head filter (`Pairwise L01_A vs L04_A Flag`) over all `12` weeks where BOTH `L01_A` and `L04_A` are complete, proving `L01_A` leads `1,482.08` to `1,388.25`.
+9. **`04c Shared 8-Wk Non-Spike Audit`**
+   - **Purpose:** Top-4 contenders across the `8` non-spike shared weeks (`Shared 8-Week Non-Spike Flag`), matching Brief & Static Backup View 4 (`L04_A 1,497.12`, `L06_B 1,428.25`, `L01_A 1,368.75`).
 
 ---
 
@@ -42,13 +48,15 @@ To guarantee that Tableau Desktop loads the `.twbx` without any schema errors or
      8. `<object-graph>` (unchanged from starter, preserving relationship `[option_id (Candidate_Options.csv)] = [option_id]`)
 3. **Strict `<worksheet>` Child Ordering & Dependency Completeness:**
    - Every `<worksheet name='...'>` must contain:
+     - `<layout-options>` containing `<title>` and `<caption>` (`<formatted-text><run ...>...</run></formatted-text>`)
      - `<table>`
        - `<view>`
          - `<datasources><datasource caption='Weekly_Activity+' name='federated.1uzq3s41802ykr10f4fc80617xzf' /></datasources>`
          - `<datasource-dependencies datasource='federated.1uzq3s41802ykr10f4fc80617xzf'>` containing:
            - Every `<column>` referenced anywhere in the worksheet (ordered before `<column-instance>`)
-           - Every `<column-instance>` referenced in `<rows>`, `<cols>`, `<encodings>`, or `<filter>`
+           - Every `<column-instance>` referenced in `<rows>`, `<cols>`, `<encodings>`, `<filter>`, or `<manual-sort>`
          - Optional `<filter class='categorical' column='[federated...].[...]' ...>`
+         - Optional `<manual-sort column='[federated...].[...]' direction='ASC'><dictionary>...</dictionary></manual-sort>`
          - Mandatory `<slices><column>[federated...].[...]</column></slices>` whenever one or more `<filter>` tags exist in `<view>`
          - `<aggregation value='true' />` (always last inside `<view>`)
        - `<style />`
@@ -57,7 +65,7 @@ To guarantee that Tableau Desktop loads the `.twbx` without any schema errors or
        - `<cols>...</cols>`
      - `<simple-id uuid='{...}' />`
 4. **Strict `<windows>` Parity:**
-   - Every `<worksheet name='...'>` in `<worksheets>` must have a matching `<window class='worksheet' name='...'>` in `<windows source-height='30'>` with complete `<cards>` (`left` edge: `pages`, `filters`, `marks`; `top` edge: `columns`, `rows`, `title`) and a unique `<simple-id uuid='{...}' />`.
+   - Every `<worksheet name='...'>` in `<worksheets>` must have a matching `<window class='worksheet' name='...'>` in `<windows source-height='30'>` with complete `<cards>` (`left` edge: `pages`, `filters`, `marks`; `top` edge: `columns`, `rows`, `title`; `bottom` edge: `caption`) and a unique `<simple-id uuid='{...}' />`.
 
 ---
 
@@ -70,11 +78,11 @@ To guarantee that Tableau Desktop loads the `.twbx` without any schema errors or
 - [ ] **Check 2.6:** `<datasource>` children appear in exact XSD order: `connection`, `aliases`, `column`(s), `column-instance`(s), `layout`, `style`, `semantic-values`, `object-graph`.
 - [ ] **Check 2.7:** `<object-graph>` contains both table objects and the exact `<relationship>` on `option_id`.
 - [ ] **Check 2.8:** All calculated `<column>` definitions have valid `<calculation class='tableau' formula='...' />` attributes and unique `[Calculation_...]` names.
-- [ ] **Check 2.9:** Every `<worksheet>` has exact child sequence `<table>`, `<simple-id>`.
+- [ ] **Check 2.9:** Every `<worksheet>` has exact child sequence `<layout-options>` (with non-empty `<title>` and `<caption>`), `<table>`, `<simple-id>`.
 - [ ] **Check 2.10:** Every `<table>` inside a worksheet has exact child sequence `<view>`, `<style>`, `<panes>`, `<rows>`, `<cols>`.
-- [ ] **Check 2.11:** Every `<view>` inside `<table>` has exact child sequence `<datasources>`, `<datasource-dependencies>` (if non-empty), `<filter>` (0 or more), `<slices>` (mandatory iff filters > 0), `<aggregation value='true' />`.
+- [ ] **Check 2.11:** Every `<view>` inside `<table>` has exact child sequence `<datasources>`, `<datasource-dependencies>` (if non-empty), `(<filter> | <manual-sort>)*`, `<slices>` (mandatory iff filters > 0), `<aggregation value='true' />`.
 - [ ] **Check 2.12:** Every `<filter column='X'>` has a matching `<column>X</column>` inside `<slices>`, and vice versa.
-- [ ] **Check 2.13:** Every `[federated...].[instance]` token used in `<rows>`, `<cols>`, `<encodings>`, `<filter>`, or `<slices>` is declared as a `<column-instance>` in that worksheet's `<datasource-dependencies>`.
+- [ ] **Check 2.13:** Every `[federated...].[instance]` token used in `<rows>`, `<cols>`, `<encodings>`, `<filter>`, `<manual-sort>`, or `<slices>` is declared as a `<column-instance>` in that worksheet's `<datasource-dependencies>`.
 - [ ] **Check 2.14:** Every `<column-instance column='[base_col]'>` in `<datasource-dependencies>` has its corresponding `<column name='[base_col]'>` declared in `<datasource-dependencies>` AND in the main `<datasource>`.
 - [ ] **Check 2.15:** Inside `<datasource-dependencies>`, all `<column>` elements appear before all `<column-instance>` elements.
 - [ ] **Check 2.16:** Every `<pane>` has `<view><breakdown value='auto' /></view>` and `<mark class='...' />` in the proper order before `<encodings>`.

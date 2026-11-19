@@ -386,6 +386,9 @@ def run_validation() -> int:
         "L05_B", "L01_B", "L05_A", "L04_B",
     ]
 
+    # Rolling 4-calendar-week block statistics (for pilot-duration risk bounds)
+    all_weeks_sorted = sorted(wa_df["week_start"].astype(str).unique().tolist())
+
     for opt_id in ordered_ids:
         meta = co_df[co_df["option_id"] == opt_id].iloc[0]
         opt_rows = wa_df[wa_df["option_id"] == opt_id].sort_values("week_start")
@@ -404,6 +407,18 @@ def run_validation() -> int:
         iqr = round(float(np.percentile(vals, 75) - np.percentile(vals, 25)), 2)
         vmin = int(np.min(vals))
         vmax = int(np.max(vals))
+
+        week_map = {
+            str(r["week_start"]): float(r["observed_passages"])
+            for _, r in comp_rows.iterrows()
+        }
+        roll_means: list[float] = []
+        for idx in range(len(all_weeks_sorted) - 3):
+            block_vals = [
+                week_map[w] for w in all_weeks_sorted[idx : idx + 4] if w in week_map
+            ]
+            if block_vals:
+                roll_means.append(round(sum(block_vals) / len(block_vals), 2))
 
         s10 = comp_rows[~comp_rows["week_start"].isin(EXCLUDED_10WK_DATES)]["observed_passages"].astype(float)
         s9 = comp_rows[~comp_rows["week_start"].isin(EXCLUDED_9WK_DATES)]["observed_passages"].astype(float)
@@ -435,6 +450,8 @@ def run_validation() -> int:
             "iqr": iqr,
             "min": vmin,
             "max": vmax,
+            "rolling_4wk_min_mean": min(roll_means),
+            "rolling_4wk_max_mean": max(roll_means),
             "shared_10wk_obs": int(len(s10)),
             "shared_10wk_mean": round(float(s10.mean()), 2),
             "shared_10wk_median": round(float(s10.median()), 2),
@@ -477,16 +494,68 @@ def run_validation() -> int:
 
         options_out[opt_id] = opt_entry
 
-    # Verify L06_B spike-trimmed target (n=13, mean=1282.62)
+    # Verify L06_B spike-trimmed target (n=13, mean=1282.62) & extended sensitivity regimes
     l06b_trim = options_out["L06_B"]["spike_trimmed"]
     if l06b_trim["obs_weeks"] != 13 or l06b_trim["mean"] != 1282.62:
         baseline_mismatches.append(f"L06_B.spike_trimmed mismatch: {l06b_trim}")
+
+    # Direct pairwise complete-case check: L01_A vs. L04_A across all shared complete weeks (n=12)
+    pw_df = wa_df[wa_df["option_id"].isin(["L01_A", "L04_A"])].pivot(
+        index="week_start", columns="option_id", values="observed_passages"
+    ).dropna()
+    pw_dates = sorted([str(idx) for idx in pw_df.index])
+    l01a_pw_vals = pw_df["L01_A"].astype(float).to_numpy()
+    l04a_pw_vals = pw_df["L04_A"].astype(float).to_numpy()
+    pairwise_12wk = {
+        "obs_weeks": int(len(pw_dates)),
+        "dates": pw_dates,
+        "L01_A_mean": round(float(np.mean(l01a_pw_vals)), 2),
+        "L01_A_median": round(float(np.median(l01a_pw_vals)), 2),
+        "L04_A_mean": round(float(np.mean(l04a_pw_vals)), 2),
+        "L04_A_median": round(float(np.median(l04a_pw_vals)), 2),
+        "L01_A_weekly_wins": int((l01a_pw_vals > l04a_pw_vals).sum()),
+        "L04_A_weekly_wins": int((l04a_pw_vals > l01a_pw_vals).sum()),
+        "listwise_excluded_pairwise_dates": [
+            d for d in pw_dates if d in EXCLUDED_8WK_NONSPIKE_DATES
+        ],
+    }
+
+    # Window B vs. Window A premium across all 6 locations
+    win_b_vs_a: dict[str, dict[str, Any]] = {}
+    for loc_num in range(1, 7):
+        oa = options_out[f"L0{loc_num}_A"]
+        ob = options_out[f"L0{loc_num}_B"]
+        win_b_vs_a[f"L0{loc_num}"] = {
+            "location_name": oa["location_name"],
+            "win_a_mean": oa["mean"],
+            "win_b_mean": ob["mean"],
+            "mean_diff_b_minus_a": round(ob["mean"] - oa["mean"], 2),
+            "cost_diff_b_minus_a": ob["total_pilot_cost_usd"] - oa["total_pilot_cost_usd"],
+        }
+
+    ext_checks = [
+        ("L04_A.shared_8wk_nonspike_mean", options_out["L04_A"]["shared_8wk_nonspike_mean"], 1497.12),
+        ("L06_B.shared_8wk_nonspike_mean", options_out["L06_B"]["shared_8wk_nonspike_mean"], 1428.25),
+        ("L01_A.shared_8wk_nonspike_mean", options_out["L01_A"]["shared_8wk_nonspike_mean"], 1368.75),
+        ("L01_A.sep_3wk_mean", options_out["L01_A"]["sep_3wk_mean"], 1520.00),
+        ("L04_A.sep_3wk_mean", options_out["L04_A"]["sep_3wk_mean"], 1459.00),
+        ("pairwise_12wk.obs_weeks", pairwise_12wk["obs_weeks"], 12),
+        ("pairwise_12wk.L01_A_mean", pairwise_12wk["L01_A_mean"], 1482.08),
+        ("pairwise_12wk.L04_A_mean", pairwise_12wk["L04_A_mean"], 1388.25),
+        ("L01_A.rolling_4wk_min_mean", options_out["L01_A"]["rolling_4wk_min_mean"], 1236.67),
+        ("L01_A.rolling_4wk_max_mean", options_out["L01_A"]["rolling_4wk_max_mean"], 1790.00),
+        ("L04_A.rolling_4wk_min_mean", options_out["L04_A"]["rolling_4wk_min_mean"], 1285.75),
+        ("L04_A.rolling_4wk_max_mean", options_out["L04_A"]["rolling_4wk_max_mean"], 1516.67),
+    ]
+    for label, got, exp in ext_checks:
+        if got != exp:
+            baseline_mismatches.append(f"{label}: got {got} != expected {exp}")
 
     checks.append(
         (
             "Check 1.8 (Baseline Reference Table Parity)",
             len(baseline_mismatches) == 0,
-            "All 12 options and spike-trimmed L06_B match reference table 100%"
+            "All 12 options, sensitivity subsets, pairwise 12-wk & rolling 4-wk benchmarks match 100%"
             if not baseline_mismatches
             else "; ".join(baseline_mismatches),
         )
@@ -524,9 +593,12 @@ def run_validation() -> int:
                 "shared_10wk_excluded_dates": EXCLUDED_10WK_DATES,
                 "shared_9wk_excluded_dates": EXCLUDED_9WK_DATES,
                 "shared_8wk_nonspike_excluded_dates": EXCLUDED_8WK_NONSPIKE_DATES,
+                "pairwise_12wk_dates": pw_dates,
                 "late_4wk_dates": LATE_4WK_DATES,
                 "sep_3wk_dates": SEP_3WK_DATES,
             },
+            "pairwise_L01A_L04A": pairwise_12wk,
+            "window_b_vs_a_by_location": win_b_vs_a,
         },
         "options": options_out,
     }
@@ -569,16 +641,21 @@ def run_validation() -> int:
 
     for opt_id in ordered_ids:
         o = options_out[opt_id]
+        s10_cell = f"{o['shared_10wk_mean']:,.2f}"
+        if o["shared_10wk_obs"] != 10:
+            s10_cell += f" (n={o['shared_10wk_obs']})"
         lines.append(
             f"| `{opt_id}` | {o['location_name']} | {o['window_id']} | ${o['total_pilot_cost_usd']:,} | "
             f"{o['within_budget']} | {o['obs_weeks']} | {o['missing_weeks']} | {o['raw_sum']:,} | "
             f"{o['mean']:,.2f} | {o['median']:,.2f} | {o['sd']:.2f} | {o['cv_pct']:.2f}% | "
-            f"{o['iqr']:.2f} | {o['min']:,}–{o['max']:,} | {o['shared_10wk_mean']:,.2f} | "
+            f"{o['iqr']:.2f} | {o['min']:,}–{o['max']:,} | {s10_cell} | "
             f"{o['shared_9wk_mean']:,.2f} | {o['late_4wk_mean']:,.2f} |"
         )
 
     lines.extend(
         [
+            "",
+            "*Note: IQR uses continuous linear interpolation (`PERCENTILE.INC`); Tableau default Tukey hinges give `485.00` for `L01_A` and `309.00` for `L04_A`. In the `10-Wk Mean` column, over-budget `L05_B` missed `2026-07-27`, so its mean over the 10-week affordable window covers `n=9` observed weeks.*",
             "",
             "## Key Sensitivity Benchmarks",
             "",
@@ -587,11 +664,17 @@ def run_validation() -> int:
             f"- **Shared 10-Week Affordable Subset (`n=10` complete weeks across all 8 affordable options):** "
             f"`L04_A` Mean = `{options_out['L04_A']['shared_10wk_mean']:,.2f}` (Median `{options_out['L04_A']['shared_10wk_median']:,.2f}`) "
             f"vs. `L01_A` Mean = `{options_out['L01_A']['shared_10wk_mean']:,.2f}` (Median `{options_out['L01_A']['shared_10wk_median']:,.2f}`)",
+            f"- **Direct Pairwise Head-to-Head (`L01_A` vs. `L04_A`, `n=12` weeks where both have complete counts):** "
+            f"`L01_A` Mean = `{pairwise_12wk['L01_A_mean']:,.2f}` (Median `{pairwise_12wk['L01_A_median']:,.2f}`) "
+            f"vs. `L04_A` Mean = `{pairwise_12wk['L04_A_mean']:,.2f}` (Median `{pairwise_12wk['L04_A_median']:,.2f}`); weekly wins split `{pairwise_12wk['L01_A_weekly_wins']}–{pairwise_12wk['L04_A_weekly_wins']}`",
             f"- **Shared 8-Week Non-Spike Subset (`n=8`, excluding 6 missing-overlap weeks + `07-06` & `08-17` spikes):** "
             f"`L04_A` Mean = `{options_out['L04_A']['shared_8wk_nonspike_mean']:,.2f}` (Median `{options_out['L04_A']['shared_8wk_nonspike_median']:,.2f}`) "
             f"vs. `L06_B` Mean = `{options_out['L06_B']['shared_8wk_nonspike_mean']:,.2f}` and `L01_A` Mean = `{options_out['L01_A']['shared_8wk_nonspike_mean']:,.2f}`",
-            f"- **September 3-Week Rebound (`2026-09-07` to `2026-09-21`):** "
-            f"`L01_A` Mean = `{options_out['L01_A']['sep_3wk_mean']:,.2f}` (`n=3`) vs. `L04_A` Late 4-Wk Mean = `{options_out['L04_A']['late_4wk_mean']:,.2f}` (`n=3`)",
+            f"- **September 3-Week Rebound (`2026-09-07` to `2026-09-21`, apples-to-apples):** "
+            f"`L01_A` Mean = `{options_out['L01_A']['sep_3wk_mean']:,.2f}` (`n=3`) vs. `L04_A` Sep 3-Wk Mean = `{options_out['L04_A']['sep_3wk_mean']:,.2f}` (`n=2`; `L04_A` Late 4-Wk Mean incl. `08-31` = `{options_out['L04_A']['late_4wk_mean']:,.2f}`)",
+            f"- **4-Week Rolling Block Ranges (`13` overlapping 4-week windows):** "
+            f"`L01_A` = `{options_out['L01_A']['rolling_4wk_min_mean']:,.2f}–{options_out['L01_A']['rolling_4wk_max_mean']:,.2f}` vs. "
+            f"`L04_A` = `{options_out['L04_A']['rolling_4wk_min_mean']:,.2f}–{options_out['L04_A']['rolling_4wk_max_mean']:,.2f}`",
             "",
         ]
     )

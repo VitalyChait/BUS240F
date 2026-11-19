@@ -179,10 +179,17 @@ def validate_twbx() -> int:
     for ws in worksheets:
         wname = ws.attrib.get("name", "<unnamed>")
         ws_children = [c.tag for c in list(ws)]
-        if ws_children != ["table", "simple-id"]:
+        if ws_children != ["layout-options", "table", "simple-id"]:
             c29_ok = False
             errors.append(f"2.9 {wname}: {ws_children}")
             continue
+
+        lo = ws.find("layout-options")
+        title_txt = "".join(lo.findall("./title/formatted-text/run")[0].itertext()).strip() if lo is not None and lo.findall("./title/formatted-text/run") else ""
+        cap_txt = "".join(lo.findall("./caption/formatted-text/run")[0].itertext()).strip() if lo is not None and lo.findall("./caption/formatted-text/run") else ""
+        if not title_txt or not cap_txt:
+            c29_ok = False
+            errors.append(f"2.9 {wname}: missing title or caption text in <layout-options>")
 
         table = ws.find("table")
         assert table is not None
@@ -195,7 +202,7 @@ def validate_twbx() -> int:
         assert view is not None
         v_tags = [c.tag for c in list(view)]
 
-        # Check 2.11: datasources, datasource-dependencies?, filter*, slices(iff filters>0), aggregation
+        # Check 2.11: datasources, datasource-dependencies?, (filter | manual-sort)*, slices(iff filters>0), aggregation
         idx = 0
         v_valid = False
         if idx < len(v_tags) and v_tags[idx] == "datasources":
@@ -207,8 +214,9 @@ def validate_twbx() -> int:
                 else:
                     idx += 1
             flt_count = 0
-            while idx < len(v_tags) and v_tags[idx] == "filter":
-                flt_count += 1
+            while idx < len(v_tags) and v_tags[idx] in ("filter", "manual-sort"):
+                if v_tags[idx] == "filter":
+                    flt_count += 1
                 idx += 1
             if flt_count > 0:
                 if idx < len(v_tags) and v_tags[idx] == "slices":
@@ -268,7 +276,7 @@ def validate_twbx() -> int:
                         c214_ok = False
                         errors.append(f"2.14 {wname}: formula ref {ref} missing in deps or ds")
 
-        # Check 2.13: every [federated...].[instance] used in rows, cols, encodings, filter, slices
+        # Check 2.13: every [federated...].[instance] used in rows, cols, encodings, filter, manual-sort, slices
         tokens_to_check: list[str] = []
         for shelf_tag in ("rows", "cols"):
             el = table.find(shelf_tag)
@@ -293,6 +301,10 @@ def validate_twbx() -> int:
                 for ds_tok, inst in FED_TOKEN_RE.findall(m_attr):
                     if ds_tok == DS_NAME:
                         tokens_to_check.append(f"[{inst}]")
+        for srt in view.findall("manual-sort"):
+            for ds_tok, inst in FED_TOKEN_RE.findall(srt.attrib.get("column", "")):
+                if ds_tok == DS_NAME:
+                    tokens_to_check.append(f"[{inst}]")
         if slices_el is not None:
             for sc in slices_el.findall("column"):
                 if sc.text:
@@ -325,11 +337,11 @@ def validate_twbx() -> int:
                 c216_ok = False
                 errors.append(f"2.16 {wname}: pane tags={p_tags}")
 
-    record("Check 2.9", c29_ok, f"checked {len(worksheets)} worksheets")
+    record("Check 2.9", c29_ok, f"checked {len(worksheets)} worksheets (layout-options titles & captions present)")
     record("Check 2.10", c210_ok, "table child sequence valid" if c210_ok else "; ".join(errors))
     record("Check 2.11", c211_ok, "view child sequence valid" if c211_ok else "; ".join(errors))
     record("Check 2.12", c212_ok, "filter/slices exact parity" if c212_ok else "; ".join(errors))
-    record("Check 2.13", c213_ok, "all shelf/encoding/filter instances declared" if c213_ok else "; ".join(errors))
+    record("Check 2.13", c213_ok, "all shelf/encoding/filter/sort instances declared" if c213_ok else "; ".join(errors))
     record("Check 2.14", c214_ok, "all base columns declared in deps & datasource" if c214_ok else "; ".join(errors))
     record("Check 2.15", c215_ok, "all <column> before <column-instance> in deps" if c215_ok else "; ".join(errors))
     record("Check 2.16", c216_ok, "pane view/breakdown/mark order valid" if c216_ok else "; ".join(errors))
@@ -340,7 +352,7 @@ def validate_twbx() -> int:
     win_names = [w.attrib.get("name") for w in windows]
     max_wins = [w.attrib.get("name") for w in windows if w.attrib.get("maximized") == "true"]
     c217 = (
-        len(ws_names) == 6
+        len(ws_names) == 9
         and ws_names == win_names
         and len(set(ws_names)) == len(ws_names)
         and len(max_wins) == 1
@@ -350,7 +362,7 @@ def validate_twbx() -> int:
     # Check 2.18: All <simple-id uuid='{...}' /> valid uppercase UUIDs with zero duplicates
     sids = [el.attrib.get("uuid", "") for el in root.findall(".//simple-id")]
     all_valid_uuid = all(bool(UUID_RE.match(u)) for u in sids)
-    c218 = len(sids) == 12 and all_valid_uuid and len(set(sids)) == len(sids)
+    c218 = len(sids) == 18 and all_valid_uuid and len(set(sids)) == len(sids)
     record("Check 2.18", c218, f"simple_ids={len(sids)}, unique={len(set(sids))}, valid_fmt={all_valid_uuid}")
 
     failed = False

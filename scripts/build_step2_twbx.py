@@ -27,9 +27,17 @@ USER_OP = f"{{{USER_NS}}}op"
 CALC_WITHIN_BUDGET = "[Calculation_2911717947329445888]"
 CALC_SHARED_10WK = "[Calculation_2911717947329445889]"
 CALC_SCHED_RECS = "[Calculation_2911717947329445890]"
+CALC_WEEKLY_SD = "[Calculation_2911717947329445891]"
+CALC_WEEKLY_CV = "[Calculation_2911717947329445892]"
+CALC_PAIRWISE_12WK = "[Calculation_2911717947329445893]"
+CALC_SHARED_8WK_NS = "[Calculation_2911717947329445894]"
 
 AFFORDABLE_OPTIONS = [
     "L01_A", "L02_A", "L02_B", "L03_A", "L03_B", "L04_A", "L06_A", "L06_B"
+]
+RANKED_OPTIONS = [
+    "L01_A", "L06_B", "L04_A", "L02_B", "L02_A", "L06_A", "L03_B", "L03_A",
+    "L05_B", "L01_B", "L05_A", "L04_B",
 ]
 
 
@@ -97,8 +105,24 @@ def build_categorical_filter(col_inst: str, members: list[str], quote_members: b
     return flt
 
 
+def build_manual_sort(col_inst: str, ordered_members: list[str]) -> ET.Element:
+    ms = ET.Element(
+        "manual-sort",
+        {"column": fq(col_inst), "direction": "ASC"},
+    )
+    dct = ET.SubElement(ms, "dictionary")
+    for m in ordered_members:
+        b = ET.SubElement(dct, "bucket")
+        b.text = f'"{m}"'
+    b_all = ET.SubElement(dct, "bucket")
+    b_all.text = "%all%"
+    return ms
+
+
 def build_worksheet(
     name: str,
+    title_text: str,
+    caption_text: str,
     dep_columns: list[dict[str, str]],
     dep_instances: list[dict[str, str]],
     filters: list[ET.Element],
@@ -109,9 +133,22 @@ def build_worksheet(
     text_formats: list[tuple[str, str]] | None = None,
     header_widths: list[tuple[str, str]] | None = None,
     cell_widths: list[tuple[str, str]] | None = None,
+    sorts: list[ET.Element] | None = None,
     show_labels: bool = True,
 ) -> ET.Element:
     ws = ET.Element("worksheet", {"name": name})
+
+    # Explicit <layout-options> title and caption (valid before <table> per Tableau XSD)
+    lo = ET.SubElement(ws, "layout-options")
+    title_el = ET.SubElement(lo, "title")
+    t_ft = ET.SubElement(title_el, "formatted-text")
+    t_run = ET.SubElement(t_ft, "run", {"bold": "true", "fontsize": "12"})
+    t_run.text = title_text
+    cap_el = ET.SubElement(lo, "caption")
+    c_ft = ET.SubElement(cap_el, "formatted-text")
+    c_run = ET.SubElement(c_ft, "run", {"fontsize": "9"})
+    c_run.text = caption_text
+
     table = ET.SubElement(ws, "table")
 
     # 1. <view>
@@ -130,6 +167,9 @@ def build_worksheet(
     for flt in filters:
         view.append(flt)
         filter_cols.append(flt.attrib["column"])
+
+    for srt in (sorts or []):
+        view.append(srt)
 
     if filter_cols:
         slices = ET.SubElement(view, "slices")
@@ -209,8 +249,12 @@ def build_window(name: str, maximized: bool = False) -> ET.Element:
     ET.SubElement(s_col, "card", {"type": "columns"})
     s_row = ET.SubElement(top, "strip", {"size": "2147483647"})
     ET.SubElement(s_row, "card", {"type": "rows"})
-    s_ttl = ET.SubElement(top, "strip", {"size": "31"})
+    s_ttl = ET.SubElement(top, "strip", {"size": "40"})
     ET.SubElement(s_ttl, "card", {"type": "title"})
+
+    bottom = ET.SubElement(cards, "edge", {"name": "bottom"})
+    s_cap = ET.SubElement(bottom, "strip", {"size": "66"})
+    ET.SubElement(s_cap, "card", {"type": "caption"})
 
     ET.SubElement(win, "simple-id", {"uuid": new_uuid_braced()})
     return win
@@ -264,6 +308,50 @@ def build_workbook() -> None:
             "role": "measure",
             "type": "quantitative",
             "formula": "COUNT([week_start])",
+        },
+        {
+            "caption": "Weekly SD",
+            "datatype": "real",
+            "default-format": "n#,##0.00;-#,##0.00",
+            "name": CALC_WEEKLY_SD,
+            "role": "measure",
+            "type": "quantitative",
+            "formula": "STDEV([observed_passages])",
+        },
+        {
+            "caption": "Weekly CV",
+            "datatype": "real",
+            "default-format": "0.00%",
+            "name": CALC_WEEKLY_CV,
+            "role": "measure",
+            "type": "quantitative",
+            "formula": "STDEV([observed_passages]) / AVG([observed_passages])",
+        },
+        {
+            "caption": "Pairwise L01_A vs L04_A Flag",
+            "datatype": "string",
+            "name": CALC_PAIRWISE_12WK,
+            "role": "dimension",
+            "type": "nominal",
+            "formula": (
+                "IF [week_start] != #2026-06-22# AND [week_start] != #2026-06-29# "
+                "AND [week_start] != #2026-08-24# AND [week_start] != #2026-09-07# "
+                'THEN "Shared 12 Pairwise Weeks" ELSE "Missing for L01_A or L04_A" END'
+            ),
+        },
+        {
+            "caption": "Shared 8-Week Non-Spike Flag",
+            "datatype": "string",
+            "name": CALC_SHARED_8WK_NS,
+            "role": "dimension",
+            "type": "nominal",
+            "formula": (
+                "IF [week_start] != #2026-06-22# AND [week_start] != #2026-06-29# "
+                "AND [week_start] != #2026-07-06# AND [week_start] != #2026-07-20# "
+                "AND [week_start] != #2026-08-10# AND [week_start] != #2026-08-17# "
+                "AND [week_start] != #2026-08-24# AND [week_start] != #2026-09-07# "
+                'THEN "Shared 8 Non-Spike Weeks" ELSE "Excluded Missing or Spike Week" END'
+            ),
         },
     ]
     for nc in new_calcs:
@@ -334,6 +422,34 @@ def build_workbook() -> None:
             "pivot": "key",
             "type": "quantitative",
         },
+        f"[usr:{CALC_WEEKLY_SD.strip('[]')}:qk]": {
+            "column": CALC_WEEKLY_SD,
+            "derivation": "User",
+            "name": f"[usr:{CALC_WEEKLY_SD.strip('[]')}:qk]",
+            "pivot": "key",
+            "type": "quantitative",
+        },
+        f"[usr:{CALC_WEEKLY_CV.strip('[]')}:qk]": {
+            "column": CALC_WEEKLY_CV,
+            "derivation": "User",
+            "name": f"[usr:{CALC_WEEKLY_CV.strip('[]')}:qk]",
+            "pivot": "key",
+            "type": "quantitative",
+        },
+        f"[none:{CALC_PAIRWISE_12WK.strip('[]')}:nk]": {
+            "column": CALC_PAIRWISE_12WK,
+            "derivation": "None",
+            "name": f"[none:{CALC_PAIRWISE_12WK.strip('[]')}:nk]",
+            "pivot": "key",
+            "type": "nominal",
+        },
+        f"[none:{CALC_SHARED_8WK_NS.strip('[]')}:nk]": {
+            "column": CALC_SHARED_8WK_NS,
+            "derivation": "None",
+            "name": f"[none:{CALC_SHARED_8WK_NS.strip('[]')}:nk]",
+            "pivot": "key",
+            "type": "nominal",
+        },
         "[cnt:observed_passages:qk]": {
             "column": "[observed_passages]",
             "derivation": "Count",
@@ -374,6 +490,10 @@ def build_workbook() -> None:
     CI_WITHIN_BUDGET = f"[none:{CALC_WITHIN_BUDGET.strip('[]')}:nk]"
     CI_SHARED_10WK = f"[none:{CALC_SHARED_10WK.strip('[]')}:nk]"
     CI_SCHED_RECS = f"[usr:{CALC_SCHED_RECS.strip('[]')}:qk]"
+    CI_WEEKLY_SD = f"[usr:{CALC_WEEKLY_SD.strip('[]')}:qk]"
+    CI_WEEKLY_CV = f"[usr:{CALC_WEEKLY_CV.strip('[]')}:qk]"
+    CI_PAIRWISE_12WK = f"[none:{CALC_PAIRWISE_12WK.strip('[]')}:nk]"
+    CI_SHARED_8WK_NS = f"[none:{CALC_SHARED_8WK_NS.strip('[]')}:nk]"
 
     # Rebuild <datasource> preserving strict child ordering:
     # connection, aliases, column(s), column-instance(s), layout, style, semantic-values, object-graph
@@ -416,6 +536,11 @@ def build_workbook() -> None:
     )
     ws1 = build_worksheet(
         name="01 Verify the Model",
+        title_text="01 Verify the Model - Record Completeness Audit (All 12 Options x 16 Weeks = 192 Rows)",
+        caption_text=(
+            "Snapshot: BUS240F_Final_Project_Starter.twbx (Jun 8 - Sep 27, 2026; Week Start Mondays 2026-06-08 to 2026-09-21 covering Tue-Sat 20-hr windows). "
+            "No filters applied: 184 Complete rows = 256,773 total passages; 8 Missing rows kept NULL/blank (0 observed counts, never zero-imputed)."
+        ),
         dep_columns=ws1_cols,
         dep_instances=ws1_cis,
         filters=[
@@ -451,6 +576,11 @@ def build_workbook() -> None:
     )
     ws1b = build_worksheet(
         name="01b Option Cost & Completeness Audit",
+        title_text="01b Fixed 4-Week Pilot Cost & Completeness Audit (Budget Cap <= $18,000)",
+        caption_text=(
+            "Options sorted by Within Budget status and observed mean passages. Single 4-week fixed pilot commitment is read via MIN(Total Pilot Cost Usd) "
+            "so cost is never multiplied by 16 weekly rows (8 Affordable True, 4 Over-Budget False; Observed Weeks n = 14 to 16 out of 16 scheduled)."
+        ),
         dep_columns=ws1b_cols,
         dep_instances=ws1b_cis,
         filters=[
@@ -458,6 +588,7 @@ def build_workbook() -> None:
                 ["[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]", CI_SCHED_RECS]
             )
         ],
+        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS)],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -480,6 +611,11 @@ def build_workbook() -> None:
     )
     ws1c = build_worksheet(
         name="01c Representative Source Check (L01_A)",
+        title_text="01c Representative Source Verification - Option L01_A (2026-06-08 Complete vs. 2026-06-29 Missing)",
+        caption_text=(
+            "Filter: Option Id = L01_A and Week Start in {2026-06-08, 2026-06-29}. Confirms exact CSV parity: 2026-06-08 = Complete (1,175 passages); "
+            "2026-06-29 = Missing (1 scheduled record, blank observed passages)."
+        ),
         dep_columns=ws1c_cols,
         dep_instances=ws1c_cis,
         filters=[
@@ -506,20 +642,28 @@ def build_workbook() -> None:
         [
             CALC_WITHIN_BUDGET, "[total_pilot_cost_usd]", "[option_id]",
             "[location_name]", "[window_id]", "[observed_passages]",
+            CALC_WEEKLY_SD, CALC_WEEKLY_CV,
         ],
         [
             CI_WITHIN_BUDGET, "[none:option_id:nk]", "[none:location_name:nk]",
             "[none:window_id:nk]", "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
             "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+            CI_WEEKLY_SD, CI_WEEKLY_CV,
         ],
     )
     ws2 = build_worksheet(
         name="02 Build the Decision",
+        title_text="02 Primary Decision View - Observed Mean vs. Median Weekly Passages by Budget Tier (All 12 Options)",
+        caption_text=(
+            "Units: Passage events / 20-hr Tue-Sat week (Jun 8 - Sep 27, 2026). Ranked by observed mean within Within Budget (True <= $18,000, n=8 vs. Over-Budget, n=4). "
+            "Missing weeks (8 total) left blank & excluded from denominators. Tooltip includes Weekly SD, Weekly CV%, Fixed Cost via MIN(), and Complete Weeks n."
+        ),
         dep_columns=ws2_cols,
         dep_instances=ws2_cis,
         filters=[
             build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"])
         ],
+        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS)],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -531,33 +675,95 @@ def build_workbook() -> None:
             ("text", fq("[Multiple Values]")),
             ("lod", fq("[min:total_pilot_cost_usd:qk]")),
             ("lod", fq("[cnt:observed_passages:qk]")),
+            ("lod", fq(CI_WEEKLY_SD)),
+            ("lod", fq(CI_WEEKLY_CV)),
         ],
         text_formats=[
-            (fq("[avg:observed_passages:qk]"), "n#,##0.0;-#,##0.0"),
-            (fq("[med:observed_passages:qk]"), "n#,##0.0;-#,##0.0"),
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
             (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
             (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+            (fq(CI_WEEKLY_SD), "n#,##0.00;-#,##0.00"),
+            (fq(CI_WEEKLY_CV), "0.00%"),
         ],
     )
 
-    # 5. Worksheet: 03 Weekly Trajectory & Outliers
-    ws3_cols, ws3_cis = deps_for(
+    # 5. Worksheet: 02b Dispersion & Cost Metrics Table
+    ws2b_cols, ws2b_cis = deps_for(
         [
             CALC_WITHIN_BUDGET, "[total_pilot_cost_usd]", "[option_id]",
-            "[location_name]", "[window_id]", "[week_start]", "[observed_passages]",
+            "[location_name]", "[window_id]", "[observed_passages]",
+            CALC_WEEKLY_SD, CALC_WEEKLY_CV,
         ],
         [
             CI_WITHIN_BUDGET, "[none:option_id:nk]", "[none:location_name:nk]",
+            "[none:window_id:nk]", "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+            "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
+            CI_WEEKLY_SD, CI_WEEKLY_CV,
+        ],
+    )
+    ws2b = build_worksheet(
+        name="02b Dispersion & Cost Metrics Table",
+        title_text="02b Exact Decision Metrics Table - Cost, Weeks (n), Mean, Median, SD & CV% (All 12 Options)",
+        caption_text=(
+            "Units: Passage events / 20-hr Tue-Sat week (Jun 8 - Sep 27, 2026). SD = sample Standard Deviation; CV = SD / Mean. "
+            "Matches Vitaly_Chait_Two_Page_Brief.pdf Page 1 table; note IQR in PDF uses PERCENTILE.INC (Tableau boxplots use Tukey hinges: L01_A=485.00, L04_A=309.00)."
+        ),
+        dep_columns=ws2b_cols,
+        dep_instances=ws2b_cis,
+        filters=[
+            build_measure_names_filter(
+                [
+                    "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+                    "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
+                    CI_WEEKLY_SD, CI_WEEKLY_CV,
+                ]
+            )
+        ],
+        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS)],
+        rows_expr=(
+            f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
+            f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
+        ),
+        cols_expr=fq("[:Measure Names]"),
+        mark_class="Text",
+        encodings=[("text", fq("[Multiple Values]"))],
+        text_formats=[
+            (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
+            (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq(CI_WEEKLY_SD), "n#,##0.00;-#,##0.00"),
+            (fq(CI_WEEKLY_CV), "0.00%"),
+        ],
+        cell_widths=[(fq("[:Measure Names]"), "115")],
+    )
+
+    # 6. Worksheet: 03 Weekly Trajectory & Outliers
+    ws3_cols, ws3_cis = deps_for(
+        [
+            "[total_pilot_cost_usd]", "[option_id]",
+            "[location_name]", "[window_id]", "[week_start]", "[observed_passages]",
+        ],
+        [
+            "[none:option_id:nk]", "[none:location_name:nk]",
             "[none:window_id:nk]", "[none:week_start:qk]", "[avg:observed_passages:qk]",
             "[min:total_pilot_cost_usd:qk]",
         ],
     )
     ws3 = build_worksheet(
         name="03 Weekly Trajectory & Outliers",
+        title_text="03 Weekly Time-Series Trajectory - 8 Affordable Options (<= $18,000, Jun 8 - Sep 27, 2026)",
+        caption_text=(
+            "Filter: 8 Affordable Options <= $18,000 (4 over-budget sites excluded for legibility, matching Static View 3). X-axis = Week Start Monday covering Tue-Sat window. "
+            "Missing weeks break lines naturally: highlights L06_B spikes (2,422 on 07-06; 2,343 on 08-17) and L01_A dip (920 on 08-31) followed by Sep rebound (1,520.00 mean)."
+        ),
         dep_columns=ws3_cols,
         dep_instances=ws3_cis,
-        filters=[],
-        rows_expr=f"({fq(CI_WITHIN_BUDGET)} * {fq('[avg:observed_passages:qk]')})",
+        filters=[
+            build_categorical_filter("[none:option_id:nk]", AFFORDABLE_OPTIONS, quote_members=True),
+        ],
+        rows_expr=fq("[avg:observed_passages:qk]"),
         cols_expr=fq("[none:week_start:qk]"),
         mark_class="Line",
         encodings=[
@@ -573,7 +779,7 @@ def build_workbook() -> None:
         show_labels=False,
     )
 
-    # 6. Worksheet: 04 Shared-Week Sensitivity Test
+    # 7. Worksheet: 04 Shared-Week Sensitivity Test
     ws4_cols, ws4_cis = deps_for(
         [
             CALC_SHARED_10WK, "[week_start]", "[option_id]", "[location_name]",
@@ -587,6 +793,11 @@ def build_workbook() -> None:
     )
     ws4 = build_worksheet(
         name="04 Shared-Week Sensitivity Test",
+        title_text="04 Shared 10-Week Affordable Sensitivity Test (All 8 Affordable Options Observed Simultaneously)",
+        caption_text=(
+            "Filter: 8 Affordable Options <= $18,000; excludes 6 weeks with >=1 affordable missing record (2026-06-22, 06-29, 07-20, 08-10, 08-24, 09-07). "
+            "L04_A overtakes L01_A (1,449.70 vs 1,407.00); L06_B jumps to 1,619.10 only because excluded dates drop 5 of L06_B's 7 slowest weeks while retaining both spikes."
+        ),
         dep_columns=ws4_cols,
         dep_instances=ws4_cis,
         filters=[
@@ -594,6 +805,7 @@ def build_workbook() -> None:
             build_categorical_filter("[none:option_id:nk]", AFFORDABLE_OPTIONS, quote_members=True),
             build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
         ],
+        sorts=[build_manual_sort("[none:option_id:nk]", RANKED_OPTIONS[:8])],
         rows_expr=(
             f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
             f"{fq('[none:window_id:nk]')}))"
@@ -607,14 +819,108 @@ def build_workbook() -> None:
             ("lod", fq("[cnt:observed_passages:qk]")),
         ],
         text_formats=[
-            (fq("[avg:observed_passages:qk]"), "n#,##0.0;-#,##0.0"),
-            (fq("[med:observed_passages:qk]"), "n#,##0.0;-#,##0.0"),
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
             (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
             (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
         ],
     )
 
-    worksheets = [ws1, ws1b, ws1c, ws2, ws3, ws4]
+    # 8. Worksheet: 04b Pairwise L01_A vs L04_A (12 Wk)
+    ws4b_cols, ws4b_cis = deps_for(
+        [
+            CALC_PAIRWISE_12WK, "[week_start]", "[option_id]", "[location_name]",
+            "[window_id]", "[total_pilot_cost_usd]", "[observed_passages]",
+        ],
+        [
+            CI_PAIRWISE_12WK, "[none:option_id:nk]", "[none:location_name:nk]",
+            "[none:window_id:nk]", "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
+            "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+        ],
+    )
+    ws4b = build_worksheet(
+        name="04b Pairwise L01_A vs L04_A (12 Wk)",
+        title_text="04b Direct Pairwise Head-to-Head - L01_A vs. L04_A Across All 12 Shared Complete Weeks",
+        caption_text=(
+            "Filter: L01_A and L04_A across the 12 weeks where BOTH are complete (excludes only 06-22, 06-29, 08-24, 09-07; keeps 07-20 & 08-10 dropped by unrelated sites in 10-wk view). "
+            "Direct pairwise result restores L01_A's lead: 1,482.08 Mean (1,512.50 Med) vs. L04_A 1,388.25 Mean (1,407.00 Med)."
+        ),
+        dep_columns=ws4b_cols,
+        dep_instances=ws4b_cis,
+        filters=[
+            build_categorical_filter(CI_PAIRWISE_12WK, ["Shared 12 Pairwise Weeks"], quote_members=True),
+            build_categorical_filter("[none:option_id:nk]", ["L01_A", "L04_A"], quote_members=True),
+            build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
+        ],
+        sorts=[build_manual_sort("[none:option_id:nk]", ["L01_A", "L04_A"])],
+        rows_expr=(
+            f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
+            f"{fq('[none:window_id:nk]')}))"
+        ),
+        cols_expr=f"({fq('[:Measure Names]')} * {fq('[Multiple Values]')})",
+        mark_class="Bar",
+        encodings=[
+            ("color", fq("[none:option_id:nk]")),
+            ("text", fq("[Multiple Values]")),
+            ("lod", fq("[min:total_pilot_cost_usd:qk]")),
+            ("lod", fq("[cnt:observed_passages:qk]")),
+        ],
+        text_formats=[
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
+            (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+        ],
+    )
+
+    # 9. Worksheet: 04c Shared 8-Wk Non-Spike Audit
+    ws4c_cols, ws4c_cis = deps_for(
+        [
+            CALC_SHARED_8WK_NS, "[week_start]", "[option_id]", "[location_name]",
+            "[window_id]", "[total_pilot_cost_usd]", "[observed_passages]",
+        ],
+        [
+            CI_SHARED_8WK_NS, "[none:option_id:nk]", "[none:location_name:nk]",
+            "[none:window_id:nk]", "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
+            "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+        ],
+    )
+    ws4c = build_worksheet(
+        name="04c Shared 8-Wk Non-Spike Audit",
+        title_text="04c Shared 8-Week Non-Spike Check (Top Contenders Excluding 6 Missing-Overlap Dates & L06_B Spikes)",
+        caption_text=(
+            "Filter: Top 4 contenders across 8 non-spike shared weeks (excludes 6 missing dates plus L06_B spikes 07-06 & 08-17). L04_A leads (1,497.12 vs L06_B 1,428.25, L01_A 1,368.75), "
+            "noting this excludes two peak L01_A weeks (07-06=1,875, 08-17=1,245) alongside 07-20 & 08-10."
+        ),
+        dep_columns=ws4c_cols,
+        dep_instances=ws4c_cis,
+        filters=[
+            build_categorical_filter(CI_SHARED_8WK_NS, ["Shared 8 Non-Spike Weeks"], quote_members=True),
+            build_categorical_filter("[none:option_id:nk]", ["L01_A", "L04_A", "L06_B", "L02_B"], quote_members=True),
+            build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
+        ],
+        sorts=[build_manual_sort("[none:option_id:nk]", ["L01_A", "L06_B", "L04_A", "L02_B"])],
+        rows_expr=(
+            f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
+            f"{fq('[none:window_id:nk]')}))"
+        ),
+        cols_expr=f"({fq('[:Measure Names]')} * {fq('[Multiple Values]')})",
+        mark_class="Bar",
+        encodings=[
+            ("color", fq("[none:option_id:nk]")),
+            ("text", fq("[Multiple Values]")),
+            ("lod", fq("[min:total_pilot_cost_usd:qk]")),
+            ("lod", fq("[cnt:observed_passages:qk]")),
+        ],
+        text_formats=[
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
+            (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+        ],
+    )
+
+    worksheets = [ws1, ws1b, ws1c, ws2, ws2b, ws3, ws4, ws4b, ws4c]
     ws_parent = root.find("worksheets")
     assert ws_parent is not None
     for child in list(ws_parent):

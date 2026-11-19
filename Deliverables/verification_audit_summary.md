@@ -11,7 +11,7 @@
 | Check 1.5 (Representative Source Rows) | **PASS** | L01_A 2026-06-08=1175 Complete; L01_A 2026-06-29=Missing/null |
 | Check 1.6 (Budget Rule) | **PASS** | within_budget=8, over_budget=4 |
 | Check 1.7 (Starter Package Parity) | **PASS** | Embedded CSVs match Data/*.csv 100% |
-| Check 1.8 (Baseline Reference Table Parity) | **PASS** | All 12 options and spike-trimmed L06_B match reference table 100% |
+| Check 1.8 (Baseline Reference Table Parity) | **PASS** | All 12 options, sensitivity subsets, pairwise 12-wk & rolling 4-wk benchmarks match 100% |
 
 ## Global Model Verification Totals
 
@@ -32,14 +32,18 @@
 | `L06_A` | Aspen Court | A | $14,500 | True | 16 | 0 | 18,719 | 1,169.94 | 1,170.00 | 156.76 | 13.40% | 267.50 | 915–1,390 | 1,240.60 | 1,247.00 | 1,222.50 |
 | `L03_B` | Willow Square | B | $13,500 | True | 16 | 0 | 18,519 | 1,157.44 | 1,164.00 | 151.04 | 13.05% | 250.50 | 943–1,426 | 1,172.10 | 1,148.67 | 1,092.50 |
 | `L03_A` | Willow Square | A | $12,000 | True | 15 | 1 | 16,211 | 1,080.73 | 1,102.00 | 111.94 | 10.36% | 182.50 | 934–1,263 | 1,089.20 | 1,070.11 | 1,032.25 |
-| `L05_B` | Juniper Row | B | $21,000 | False | 15 | 1 | 25,971 | 1,731.40 | 1,757.00 | 173.19 | 10.00% | 220.00 | 1,490–2,053 | 1,744.11 | 1,744.11 | 1,790.00 |
+| `L05_B` | Juniper Row | B | $21,000 | False | 15 | 1 | 25,971 | 1,731.40 | 1,757.00 | 173.19 | 10.00% | 220.00 | 1,490–2,053 | 1,744.11 (n=9) | 1,744.11 | 1,790.00 |
 | `L01_B` | Cedar Walk | B | $19,500 | False | 16 | 0 | 26,094 | 1,630.88 | 1,679.00 | 347.68 | 21.32% | 509.25 | 1,035–2,237 | 1,536.10 | 1,551.00 | 1,490.00 |
 | `L05_A` | Juniper Row | A | $19,000 | False | 16 | 0 | 25,651 | 1,603.19 | 1,590.00 | 153.50 | 9.57% | 217.00 | 1,365–1,878 | 1,605.90 | 1,620.78 | 1,670.00 |
 | `L04_B` | Birch Arcade | B | $18,500 | False | 16 | 0 | 23,515 | 1,469.69 | 1,513.50 | 237.86 | 16.18% | 313.25 | 992–1,884 | 1,546.60 | 1,553.00 | 1,455.00 |
+
+*Note: IQR uses continuous linear interpolation (`PERCENTILE.INC`); Tableau default Tukey hinges give `485.00` for `L01_A` and `309.00` for `L04_A`. In the `10-Wk Mean` column, over-budget `L05_B` missed `2026-07-27`, so its mean over the 10-week affordable window covers `n=9` observed weeks.*
 
 ## Key Sensitivity Benchmarks
 
 - **L06_B Spike-Trimmed (`n=13`, excluding `2026-07-06`=2,422 and `2026-08-17`=2,343):** Mean = `1,282.62`, Median = `1,274.00`, SD = `288.83`
 - **Shared 10-Week Affordable Subset (`n=10` complete weeks across all 8 affordable options):** `L04_A` Mean = `1,449.70` (Median `1,458.50`) vs. `L01_A` Mean = `1,407.00` (Median `1,390.00`)
+- **Direct Pairwise Head-to-Head (`L01_A` vs. `L04_A`, `n=12` weeks where both have complete counts):** `L01_A` Mean = `1,482.08` (Median `1,512.50`) vs. `L04_A` Mean = `1,388.25` (Median `1,407.00`); weekly wins split `6–6`
 - **Shared 8-Week Non-Spike Subset (`n=8`, excluding 6 missing-overlap weeks + `07-06` & `08-17` spikes):** `L04_A` Mean = `1,497.12` (Median `1,500.50`) vs. `L06_B` Mean = `1,428.25` and `L01_A` Mean = `1,368.75`
-- **September 3-Week Rebound (`2026-09-07` to `2026-09-21`):** `L01_A` Mean = `1,520.00` (`n=3`) vs. `L04_A` Late 4-Wk Mean = `1,472.67` (`n=3`)
+- **September 3-Week Rebound (`2026-09-07` to `2026-09-21`, apples-to-apples):** `L01_A` Mean = `1,520.00` (`n=3`) vs. `L04_A` Sep 3-Wk Mean = `1,459.00` (`n=2`; `L04_A` Late 4-Wk Mean incl. `08-31` = `1,472.67`)
+- **4-Week Rolling Block Ranges (`13` overlapping 4-week windows):** `L01_A` = `1,236.67–1,790.00` vs. `L04_A` = `1,285.75–1,516.67`

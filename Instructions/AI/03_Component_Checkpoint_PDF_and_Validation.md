@@ -11,7 +11,7 @@ Generate `Vitaly_Chait_Project_Checkpoint.pdf` adhering strictly to `Instruction
 1. **Decision Question:**
    - Identifies the decision-maker (pilot-program manager), the 12 total candidate options (narrowed to the 8 affordable options meeting `Total Pilot Cost <= $18,000`), the 4-week trial window (`Oct 12 – Nov 8, 2026`, 20 hrs/wk, 80 hrs total), and the comparison between primary candidate **`L01_A` (Cedar Walk, Window A, $18,000)** and credible affordable alternatives **`L04_A` (Birch Arcade, Window A, $17,500)** and **`L06_B` (Aspen Court, Window B, $16,000)**.
 2. **Defined Metric:**
-   - Observed-Week Mean (`AVG(Observed Passages)`) and Observed-Week Median (`MEDIAN(Observed Passages)`), in **passage events per 20-hour scheduled week** across `2026-06-08` to `2026-09-21` (16 weeks).
+   - **Average Observed Passages and the Typical (Median) Middle Week Observed Passages**, in **passage events per 20-hour Tue–Sat week** across 16 weekly periods (Week Start Mondays `2026-06-08` to `2026-09-21`, covering `Jun 8 – Sep 27, 2026`). Fixed 4-week cost is read via **The minimum of Total Pilot Cost Usd**.
    - Explicit treatment of missing observations: 8 missing rows (7 among affordable options) are left blank and excluded from the mean/median denominator ($n_i \in \{14, 15, 16\}$), never replaced with zero.
 3. **Preliminary Claim:**
    - Bounded, quantitative statement: Across all available complete weeks (`2026-06-08` to `2026-09-21`), `L01_A` ($n=14$, $18,000) leads all 8 affordable options in both Mean (`1,510.00` passages/wk) and Median (`1,535.00` passages/wk), ahead of `L04_A` ($n=14$, $17,500; Mean `1,401.36`, Median `1,424.50`) and `L06_B` ($n=15$, $16,000; Mean `1,429.27`, Median `1,327.00`).

@@ -86,16 +86,25 @@ After the simplification rewrite, Vitaly ran a second validation pass and select
 - **Priority 4 (Medium — Leader Line Crossing on Backup Page 3):** Updated the `L04_A Steady Corridor` annotation offset (`dx=-205, dy=128`) in `scripts/build_step4_final_pdfs.py` so its callout line no longer crossed series paths on Page 3 of `Vitaly_Chait_Static_View_Backup.pdf`.
 - **Priority 5 (Medium-Low — Data Governance Parity):** Promoted the `shared_8wk_nonspike` (`obs`, `mean`, `median`) and `sep_3wk` (`obs`, `mean`, `median`) metrics into `Deliverables/golden_metrics.json` (and `scripts/validate_step1_data.py`) so secondary sensitivity findings were governed by the same single source of truth as primary metrics.
 
-### Stage 4 — Final Editorial Polish, Plain Language & Transparent AI Disclosure
-In the final refinement passes, Vitaly tightened presentation language and attribution:
+### Stage 4 — Final Editorial Polish & Attribution
+In the refinement passes, Vitaly tightened presentation language and attribution:
 
 - **Checkpoint PDF (`scripts/build_step3_checkpoint.py`):**
   1. Replaced raw formula labels (`Average (AVG(Observed Passages))` / `Typical Middle Week (MEDIAN(Observed Passages))`) with plain English: **`Average Observed Passages and the Typical (Median) Middle Week Observed Passages`**.
   2. Replaced `MIN(Total Pilot Cost Usd)` in prose with **`The minimum of Total Pilot Cost Usd`**.
   3. Reformatted **`Suggested Narrative Template (Completed)`** into 4 scannable bullets: **`Decision`**, **`Measurement`**, **`View`**, and **`TODO`**.
 - **Two-Page Brief (`scripts/build_step4_final_pdfs.py`):**
-  - Converted **`Verification Notes, Data Hygiene & AI Assistance Disclosure`** on Page 2 into 3 structured bullets (**Data Check & Fixed Snapshot**, **Spot Checks & Cost Rule**, **AI Assistance Disclosure**).
+  - Converted **`Verification Notes, Data Hygiene & AI Assistance Disclosure`** on Page 2 into 3 structured bullets (**Data Check & Fixed Snapshot**, **Spot Checks, Cost Rule & IQR Note**, **AI Assistance Disclosure**).
   - Updated the AI disclosure to replace `"the author"` with **`I (Vitaly)`**, explicitly document the upfront **`.md` file conversion**, the **master plan + modular subtask routines + verifiable unit-testing architecture**, **manual verification on every part**, and the public GitHub repository (`https://github.com/VitalyChait/BUS240F`).
+
+### Stage 5 — Comprehensive End-to-End Content, Tableau & Statistical Validation
+A full-project adversarial validation prioritizing content and analytical accuracy surfaced 10 further improvements, all implemented and re-verified:
+
+1. **Direct Pairwise Test (`12` Shared `L01_A` / `L04_A` Weeks):** Added the direct `n=12` pairwise comparison (`L01_A = 1,482.08` mean / `1,512.50` median vs. `L04_A = 1,388.25` mean / `1,407.00` median; `6–6` weekly wins), exposing how listwise deletion in the 10-week and 8-week subsets removed `07-20`, `08-10`, `07-06`, and `08-17`—the exact 4 weeks where `L01_A` outpaced `L04_A` by its widest margins.
+2. **Corrected `L06_B` Slowest-Weeks Claim:** Fixed `"5 slowest weeks"` / `"5 lowest summer weeks"` to **`"5 of L06_B's 7 slowest weeks (840–1,274; keeping 1,024 and 1,170 in)"`**.
+3. **Apples-to-Apples September Rebound:** Fixed Q9/summaries to compare `L01_A` (`1,520.00`, `n=3`) directly against **`L04_A`'s exact same September 3-week mean (`1,459.00`, `n=2`)** alongside `L04_A`'s Late 4-Week average (`1,472.67`).
+4. **Window B Premium, 4-Week Rolling Risk & Non-Technical Glossary:** Added Window B > Window A at all 6 locations (`+$68` to `+$259`/wk at `+$1k–$2k`), 4-week rolling risk (`L01_A` `1,236.67–1,790.00` vs. `L04_A` `1,285.75–1,516.67`), plain-English expansions of `SD`/`CV`/`IQR` + `PERCENTILE.INC` vs. Tableau Tukey hinges, `Week Start` Monday clarifications (`Jun 8 – Sep 27, 2026`), and `L05_B` `(n=9)` annotation in `10-Wk Mean` tables.
+5. **Tableau Workbook (`.twbx`) Parity, XSD Titles/Captions & Sorts:** Added official Tableau XSD `<layout-options>` (`<title>` and `<caption>`) + bottom caption cards, `<manual-sort>` rankings, `Weekly SD`/`Weekly CV`/`Pairwise`/`8-Wk Non-Spike` calculated fields, and 3 new worksheets (`02b`, `04b`, `04c`, bringing the workbook to `9` verified sheets), alongside expanded automated assertions in `validate_step1_data.py`–`validate_step5_package.py` and typo fixes in `README.md`.
 
 ---
 
