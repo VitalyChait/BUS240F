@@ -62,7 +62,7 @@ endobj
 endobj
 9 0 obj
 <<
-/Author (Vitaly Chait) /CreationDate (D:20261118201233-05'00') /Creator (anonymous) /Keywords () /ModDate (D:20261118201233-05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+/Author (Vitaly Chait) /CreationDate (D:20261118204112-05'00') /Creator (anonymous) /Keywords () /ModDate (D:20261118204112-05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (unspecified) /Title (BUS 240F Static View Backup \(4 Decisive Views\) - Vitaly Chait) /Trapped /False
 >>
 endobj
@@ -3089,10 +3089,10 @@ n
 691.0667 279.7669 693.2157 277.6178 695.8667 277.6178 c
 698.5176 277.6178 700.6667 279.7669 700.6667 282.4178 c
 S
-n 695.8667 282.4178 m 535.8667 410.4178 l S
+n 695.8667 282.4178 m 490.8667 410.4178 l S
 .054902 .486275 .482353 rg
 BT /F2 6.8 Tf 8.16 TL ET
-BT 1 0 0 1 357.3795 408.4178 Tm (L04_A Steady Corridor \(978-1,721; Late Mean 1,472.67\)) Tj T* ET
+BT 1 0 0 1 312.3795 408.4178 Tm (L04_A Steady Corridor \(978-1,721; Late Mean 1,472.67\)) Tj T* ET
 .121569 .380392 .552941 RG
 .8 w
 n
@@ -3570,7 +3570,7 @@ xref
 trailer
 <<
 /ID 
-[<1a891e509752d10ee37966c7bae02b9c><1a891e509752d10ee37966c7bae02b9c>]
+[<ded9427421ea67fc587dc0510f304aaa><ded9427421ea67fc587dc0510f304aaa>]
 % ReportLab generated PDF document -- digest (opensource)
 
 /Info 9 0 R

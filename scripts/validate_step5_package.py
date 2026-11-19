@@ -164,6 +164,22 @@ def validate_package() -> int:
         if missing_here:
             inconsistencies.append(f"{label} missing {missing_here}")
 
+    # Also confirm 8-week non-spike & September 3-week benchmarks across Brief, Backup, and Defense Guide
+    post_checkpoint_metrics = [
+        f"{opts['L04_A']['shared_8wk_nonspike_mean']:,.2f}",  # 1,497.12
+        f"{opts['L06_B']['shared_8wk_nonspike_mean']:,.2f}",  # 1,428.25
+        f"{opts['L01_A']['shared_8wk_nonspike_mean']:,.2f}",  # 1,368.75
+        f"{opts['L01_A']['sep_3wk_mean']:,.2f}",              # 1,520.00
+    ]
+    for label, txt in [
+        ("Two_Page_Brief_PDF", br_text),
+        ("Static_View_Backup_PDF", bk_text),
+        ("Presentation_and_Defense_Guide.md", guide_text),
+    ]:
+        miss_pc = [m for m in post_checkpoint_metrics if m not in txt]
+        if miss_pc:
+            inconsistencies.append(f"{label} missing {miss_pc}")
+
     # Also confirm exact numbers in defense guide for Q&A benchmarks
     extra_guide = [
         f"{opts['L02_B']['mean']:,.2f}",
@@ -174,6 +190,7 @@ def validate_package() -> int:
         f"{opts['L01_A']['shared_10wk_median']:,.2f}",
         f"{opts['L04_A']['shared_9wk_mean']:,.2f}",
         f"{opts['L01_A']['shared_9wk_mean']:,.2f}",
+        f"{opts['L04_A']['shared_8wk_nonspike_median']:,.2f}",
         "21,140",
         "21,439",
         "19,619",
@@ -187,7 +204,7 @@ def validate_package() -> int:
         (
             "Check 5.2 (Cross-Deliverable Consistency)",
             c52,
-            f"all {len(core_metrics)} core metrics & {len(extra_guide)} defense benchmarks aligned 100% across all deliverables"
+            f"all {len(core_metrics)} core metrics, {len(post_checkpoint_metrics)} sensitivity benchmarks & {len(extra_guide)} defense benchmarks aligned 100% across deliverables"
             if c52
             else "; ".join(inconsistencies),
         )

@@ -42,6 +42,8 @@ LATE_4WK_DATES = [
     "2026-09-21",
 ]
 L06_B_SPIKE_DATES = ["2026-07-06", "2026-08-17"]
+EXCLUDED_8WK_NONSPIKE_DATES = sorted(set(EXCLUDED_10WK_DATES) | set(L06_B_SPIKE_DATES))
+SEP_3WK_DATES = ["2026-09-07", "2026-09-14", "2026-09-21"]
 
 # Reference values from Instructions/AI/00_Master_Implementation_Plan.md
 EXPECTED_BASELINE: dict[str, dict[str, Any]] = {
@@ -405,7 +407,9 @@ def run_validation() -> int:
 
         s10 = comp_rows[~comp_rows["week_start"].isin(EXCLUDED_10WK_DATES)]["observed_passages"].astype(float)
         s9 = comp_rows[~comp_rows["week_start"].isin(EXCLUDED_9WK_DATES)]["observed_passages"].astype(float)
+        s8_ns = comp_rows[~comp_rows["week_start"].isin(EXCLUDED_8WK_NONSPIKE_DATES)]["observed_passages"].astype(float)
         late4 = comp_rows[comp_rows["week_start"].isin(LATE_4WK_DATES)]["observed_passages"].astype(float)
+        sep3 = comp_rows[comp_rows["week_start"].isin(SEP_3WK_DATES)]["observed_passages"].astype(float)
 
         cost = int(meta["total_pilot_cost_usd"])
         within_budget = bool(cost <= BUDGET_CAP_USD)
@@ -437,9 +441,15 @@ def run_validation() -> int:
             "shared_9wk_obs": int(len(s9)),
             "shared_9wk_mean": round(float(s9.mean()), 2),
             "shared_9wk_median": round(float(s9.median()), 2),
+            "shared_8wk_nonspike_obs": int(len(s8_ns)),
+            "shared_8wk_nonspike_mean": round(float(s8_ns.mean()), 2),
+            "shared_8wk_nonspike_median": round(float(s8_ns.median()), 2),
             "late_4wk_obs": int(len(late4)),
             "late_4wk_mean": round(float(late4.mean()), 2),
             "late_4wk_median": round(float(late4.median()), 2),
+            "sep_3wk_obs": int(len(sep3)),
+            "sep_3wk_mean": round(float(sep3.mean()), 2),
+            "sep_3wk_median": round(float(sep3.median()), 2),
         }
 
         if opt_id == "L06_B":
@@ -513,7 +523,9 @@ def run_validation() -> int:
             "subsets": {
                 "shared_10wk_excluded_dates": EXCLUDED_10WK_DATES,
                 "shared_9wk_excluded_dates": EXCLUDED_9WK_DATES,
+                "shared_8wk_nonspike_excluded_dates": EXCLUDED_8WK_NONSPIKE_DATES,
                 "late_4wk_dates": LATE_4WK_DATES,
+                "sep_3wk_dates": SEP_3WK_DATES,
             },
         },
         "options": options_out,
@@ -575,6 +587,11 @@ def run_validation() -> int:
             f"- **Shared 10-Week Affordable Subset (`n=10` complete weeks across all 8 affordable options):** "
             f"`L04_A` Mean = `{options_out['L04_A']['shared_10wk_mean']:,.2f}` (Median `{options_out['L04_A']['shared_10wk_median']:,.2f}`) "
             f"vs. `L01_A` Mean = `{options_out['L01_A']['shared_10wk_mean']:,.2f}` (Median `{options_out['L01_A']['shared_10wk_median']:,.2f}`)",
+            f"- **Shared 8-Week Non-Spike Subset (`n=8`, excluding 6 missing-overlap weeks + `07-06` & `08-17` spikes):** "
+            f"`L04_A` Mean = `{options_out['L04_A']['shared_8wk_nonspike_mean']:,.2f}` (Median `{options_out['L04_A']['shared_8wk_nonspike_median']:,.2f}`) "
+            f"vs. `L06_B` Mean = `{options_out['L06_B']['shared_8wk_nonspike_mean']:,.2f}` and `L01_A` Mean = `{options_out['L01_A']['shared_8wk_nonspike_mean']:,.2f}`",
+            f"- **September 3-Week Rebound (`2026-09-07` to `2026-09-21`):** "
+            f"`L01_A` Mean = `{options_out['L01_A']['sep_3wk_mean']:,.2f}` (`n=3`) vs. `L04_A` Late 4-Wk Mean = `{options_out['L04_A']['late_4wk_mean']:,.2f}` (`n=3`)",
             "",
         ]
     )

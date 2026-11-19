@@ -46,8 +46,23 @@
         "2026-09-07",
         "2026-07-27"
       ],
+      "shared_8wk_nonspike_excluded_dates": [
+        "2026-06-22",
+        "2026-06-29",
+        "2026-07-06",
+        "2026-07-20",
+        "2026-08-10",
+        "2026-08-17",
+        "2026-08-24",
+        "2026-09-07"
+      ],
       "late_4wk_dates": [
         "2026-08-31",
+        "2026-09-07",
+        "2026-09-14",
+        "2026-09-21"
+      ],
+      "sep_3wk_dates": [
         "2026-09-07",
         "2026-09-14",
         "2026-09-21"
@@ -85,9 +100,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1423.33,
       "shared_9wk_median": 1500.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1368.75,
+      "shared_8wk_nonspike_median": 1390.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1370.0,
-      "late_4wk_median": 1412.5
+      "late_4wk_median": 1412.5,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1520.0,
+      "sep_3wk_median": 1545.0
     },
     "L06_B": {
       "option_id": "L06_B",
@@ -118,9 +139,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1649.44,
       "shared_9wk_median": 1616.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1428.25,
+      "shared_8wk_nonspike_median": 1441.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1420.0,
       "late_4wk_median": 1431.5,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1337.67,
+      "sep_3wk_median": 1327.0,
       "spike_trimmed": {
         "excluded_dates": [
           "2026-07-06",
@@ -166,9 +193,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1455.56,
       "shared_9wk_median": 1500.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1497.12,
+      "shared_8wk_nonspike_median": 1500.5,
       "late_4wk_obs": 3,
       "late_4wk_mean": 1472.67,
-      "late_4wk_median": 1500.0
+      "late_4wk_median": 1500.0,
+      "sep_3wk_obs": 2,
+      "sep_3wk_mean": 1459.0,
+      "sep_3wk_median": 1459.0
     },
     "L02_B": {
       "option_id": "L02_B",
@@ -199,9 +232,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1290.0,
       "shared_9wk_median": 1300.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1289.5,
+      "shared_8wk_nonspike_median": 1308.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1281.25,
-      "late_4wk_median": 1285.0
+      "late_4wk_median": 1285.0,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1264.0,
+      "sep_3wk_median": 1254.0
     },
     "L02_A": {
       "option_id": "L02_A",
@@ -230,9 +269,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1229.33,
       "shared_9wk_median": 1217.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1226.88,
+      "shared_8wk_nonspike_median": 1240.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1228.75,
-      "late_4wk_median": 1243.5
+      "late_4wk_median": 1243.5,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1213.33,
+      "sep_3wk_median": 1212.0
     },
     "L06_A": {
       "option_id": "L06_A",
@@ -261,9 +306,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1247.0,
       "shared_9wk_median": 1313.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1220.38,
+      "shared_8wk_nonspike_median": 1248.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1222.5,
-      "late_4wk_median": 1223.0
+      "late_4wk_median": 1223.0,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1175.33,
+      "sep_3wk_median": 1128.0
     },
     "L03_B": {
       "option_id": "L03_B",
@@ -292,9 +343,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1148.67,
       "shared_9wk_median": 1178.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1153.12,
+      "shared_8wk_nonspike_median": 1164.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1092.5,
-      "late_4wk_median": 1081.5
+      "late_4wk_median": 1081.5,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1130.33,
+      "sep_3wk_median": 1184.0
     },
     "L03_A": {
       "option_id": "L03_A",
@@ -325,9 +382,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1070.11,
       "shared_9wk_median": 1122.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1072.62,
+      "shared_8wk_nonspike_median": 1096.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1032.25,
-      "late_4wk_median": 1032.0
+      "late_4wk_median": 1032.0,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1055.67,
+      "sep_3wk_median": 1102.0
     },
     "L05_B": {
       "option_id": "L05_B",
@@ -358,9 +421,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1744.11,
       "shared_9wk_median": 1781.0,
+      "shared_8wk_nonspike_obs": 7,
+      "shared_8wk_nonspike_mean": 1758.57,
+      "shared_8wk_nonspike_median": 1781.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1790.0,
-      "late_4wk_median": 1776.5
+      "late_4wk_median": 1776.5,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1789.33,
+      "sep_3wk_median": 1761.0
     },
     "L01_B": {
       "option_id": "L01_B",
@@ -389,9 +458,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1551.0,
       "shared_9wk_median": 1620.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1499.0,
+      "shared_8wk_nonspike_median": 1511.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1490.0,
-      "late_4wk_median": 1525.5
+      "late_4wk_median": 1525.5,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1641.67,
+      "sep_3wk_median": 1669.0
     },
     "L05_A": {
       "option_id": "L05_A",
@@ -420,9 +495,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1620.78,
       "shared_9wk_median": 1618.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1612.75,
+      "shared_8wk_nonspike_median": 1574.0,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1670.0,
-      "late_4wk_median": 1667.0
+      "late_4wk_median": 1667.0,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1661.33,
+      "sep_3wk_median": 1638.0
     },
     "L04_B": {
       "option_id": "L04_B",
@@ -451,9 +532,15 @@
       "shared_9wk_obs": 9,
       "shared_9wk_mean": 1553.0,
       "shared_9wk_median": 1562.0,
+      "shared_8wk_nonspike_obs": 8,
+      "shared_8wk_nonspike_mean": 1598.62,
+      "shared_8wk_nonspike_median": 1603.5,
       "late_4wk_obs": 4,
       "late_4wk_mean": 1455.0,
-      "late_4wk_median": 1515.5
+      "late_4wk_median": 1515.5,
+      "sep_3wk_obs": 3,
+      "sep_3wk_mean": 1419.33,
+      "sep_3wk_median": 1469.0
     }
   }
 }

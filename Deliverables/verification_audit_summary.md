@@ -41,3 +41,5 @@
 
 - **L06_B Spike-Trimmed (`n=13`, excluding `2026-07-06`=2,422 and `2026-08-17`=2,343):** Mean = `1,282.62`, Median = `1,274.00`, SD = `288.83`
 - **Shared 10-Week Affordable Subset (`n=10` complete weeks across all 8 affordable options):** `L04_A` Mean = `1,449.70` (Median `1,458.50`) vs. `L01_A` Mean = `1,407.00` (Median `1,390.00`)
+- **Shared 8-Week Non-Spike Subset (`n=8`, excluding 6 missing-overlap weeks + `07-06` & `08-17` spikes):** `L04_A` Mean = `1,497.12` (Median `1,500.50`) vs. `L06_B` Mean = `1,428.25` and `L01_A` Mean = `1,368.75`
+- **September 3-Week Rebound (`2026-09-07` to `2026-09-21`):** `L01_A` Mean = `1,520.00` (`n=3`) vs. `L04_A` Late 4-Wk Mean = `1,472.67` (`n=3`)

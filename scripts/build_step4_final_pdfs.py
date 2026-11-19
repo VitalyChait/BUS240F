@@ -1000,7 +1000,7 @@ def build_static_backup(golden: dict, wa_df: pd.DataFrame) -> None:
     annotate(4, 2422, "L06_B Spike #1: 2,422 (07-06)", 10, 4, AMBER)
     annotate(10, 2343, "L06_B Spike #2: 2,343 (08-17)", -10, 6, AMBER)
     annotate(12, 920, "L01_A Dip: 920 (08-31)", -12, -16, BLUE)
-    annotate(14, 1501, "L04_A Steady Corridor (978-1,721; Late Mean 1,472.67)", -160, 128, TEAL)
+    annotate(14, 1501, "L04_A Steady Corridor (978-1,721; Late Mean 1,472.67)", -205, 128, TEAL)
     annotate(6, 1970, "L01_A Peak: 1,970 (07-20)", 8, 8, BLUE)
 
     # Bottom Legend Strip (2x2 clean grid)
