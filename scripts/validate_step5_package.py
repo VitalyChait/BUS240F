@@ -164,15 +164,28 @@ def validate_package() -> int:
         if missing_here:
             inconsistencies.append(f"{label} missing {missing_here}")
 
-    # Also confirm 8-week non-spike, September 3-week, and 12-week pairwise benchmarks across deliverables
+    # Also confirm 8-week non-spike, September 3-week, shared Sep/Late, and 12-week pairwise benchmarks across deliverables
     post_checkpoint_metrics = [
-        f"{opts['L04_A']['shared_8wk_nonspike_mean']:,.2f}",  # 1,497.12
+        f"{opts['L04_A']['shared_8wk_nonspike_mean']:,.2f}",  # 1,497.13
         f"{opts['L06_B']['shared_8wk_nonspike_mean']:,.2f}",  # 1,428.25
         f"{opts['L01_A']['shared_8wk_nonspike_mean']:,.2f}",  # 1,368.75
         f"{opts['L01_A']['sep_3wk_mean']:,.2f}",              # 1,520.00
         f"{opts['L04_A']['sep_3wk_mean']:,.2f}",              # 1,459.00
         f"{meta['pairwise_L01A_L04A']['L01_A_mean']:,.2f}",   # 1,482.08
         f"{meta['pairwise_L01A_L04A']['L04_A_mean']:,.2f}",   # 1,388.25
+        f"{meta['pairwise_L01A_L04A']['shared_sep_L01_A_mean']:,.2f}",  # 1,507.50
+        f"{meta['pairwise_L01A_L04A']['shared_late_L01_A_mean']:,.2f}", # 1,311.67
+    ]
+    bad_phrases = [
+        "5 slowest weeks",
+        "5 lowest summer weeks",
+        "1,497.12",
+        "1,236.67",
+        "1,790.00",
+        "1,516.67",
+        "same 3 September weeks",
+        "exact same September weeks",
+        "2-week pre-trial",
     ]
     for label, txt in [
         ("Checkpoint_PDF", cp_text),
@@ -180,12 +193,12 @@ def validate_package() -> int:
         ("Static_View_Backup_PDF", bk_text),
         ("Presentation_and_Defense_Guide.md", guide_text),
     ]:
-        # Checkpoint intentionally stops at 10-wk, 12-wk pairwise & Sep rebound; Brief/Backup/Guide also cover 8-wk non-spike
+        # Checkpoint intentionally stops at 10-wk, 12-wk pairwise & Sep/Late shared; Brief/Backup/Guide also cover 8-wk non-spike
         req_here = post_checkpoint_metrics[3:] if label == "Checkpoint_PDF" else post_checkpoint_metrics
         miss_pc = [m for m in req_here if m not in txt]
         if miss_pc:
             inconsistencies.append(f"{label} missing {miss_pc}")
-        for bad in ["5 slowest weeks", "5 lowest summer weeks"]:
+        for bad in bad_phrases:
             if bad in txt:
                 inconsistencies.append(f"{label} contains inaccurate phrase: {bad!r}")
 

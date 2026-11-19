@@ -190,6 +190,10 @@ def validate_twbx() -> int:
         if not title_txt or not cap_txt:
             c29_ok = False
             errors.append(f"2.9 {wname}: missing title or caption text in <layout-options>")
+        for bad_tok in ("two peak L01_A weeks", "1,497.12"):
+            if bad_tok in cap_txt:
+                c29_ok = False
+                errors.append(f"2.9 {wname}: invalid/stale caption token {bad_tok!r}")
 
         table = ws.find("table")
         assert table is not None
@@ -347,23 +351,36 @@ def validate_twbx() -> int:
     record("Check 2.15", c215_ok, "all <column> before <column-instance> in deps" if c215_ok else "; ".join(errors))
     record("Check 2.16", c216_ok, "pane view/breakdown/mark order valid" if c216_ok else "; ".join(errors))
 
-    # Check 2.17: <worksheets> and <windows> 1-to-1 match, exactly one maximized='true'
+    # Check 2.17: <worksheets> and <windows> 1-to-1 match, 12 sheets, budget tier sorted ASC, 1 maximized
     ws_names = [ws.attrib.get("name") for ws in worksheets]
     windows = root.findall("./windows/window")
     win_names = [w.attrib.get("name") for w in windows]
     max_wins = [w.attrib.get("name") for w in windows if w.attrib.get("maximized") == "true"]
+    wb_col = f"[{DS_NAME}].[none:Calculation_2911717947329445888:nk]"
+    wb_sort_ok = True
+    for ws in worksheets:
+        rows_txt = (ws.find("./table/rows").text or "") if ws.find("./table/rows") is not None else ""
+        if wb_col in rows_txt:
+            has_wb_sort = any(
+                s.attrib.get("column") == wb_col and s.attrib.get("direction") == "ASC"
+                for s in ws.findall("./table/view/sort")
+            )
+            if not has_wb_sort:
+                wb_sort_ok = False
+                errors.append(f"2.17 {ws.attrib.get('name')}: missing ASC sort on Within Budget")
     c217 = (
-        len(ws_names) == 9
+        len(ws_names) == 12
         and ws_names == win_names
         and len(set(ws_names)) == len(ws_names)
         and len(max_wins) == 1
+        and wb_sort_ok
     )
-    record("Check 2.17", c217, f"count={len(ws_names)}, maximized={max_wins}")
+    record("Check 2.17", c217, f"count={len(ws_names)}, maximized={max_wins}, wb_sort_ok={wb_sort_ok}")
 
     # Check 2.18: All <simple-id uuid='{...}' /> valid uppercase UUIDs with zero duplicates
     sids = [el.attrib.get("uuid", "") for el in root.findall(".//simple-id")]
     all_valid_uuid = all(bool(UUID_RE.match(u)) for u in sids)
-    c218 = len(sids) == 18 and all_valid_uuid and len(set(sids)) == len(sids)
+    c218 = len(sids) == 24 and all_valid_uuid and len(set(sids)) == len(sids)
     record("Check 2.18", c218, f"simple_ids={len(sids)}, unique={len(set(sids))}, valid_fmt={all_valid_uuid}")
 
     failed = False

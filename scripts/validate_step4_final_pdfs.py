@@ -171,6 +171,12 @@ def validate_final_pdfs() -> int:
             f"{opts['L04_A']['sep_3wk_mean']:,.2f}",
             f"{meta['pairwise_L01A_L04A']['L01_A_mean']:,.2f}",
             f"{meta['pairwise_L01A_L04A']['L04_A_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['shared_sep_L01_A_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['shared_late_L01_A_mean']:,.2f}",
+            f"{opts['L01_A']['rolling_4wk_min_mean']:,.2f}",
+            f"{opts['L01_A']['rolling_4wk_max_mean']:,.2f}",
+            f"{opts['L04_A']['rolling_4wk_min_mean']:,.2f}",
+            f"{opts['L04_A']['rolling_4wk_max_mean']:,.2f}",
         ]
     )
 
@@ -209,12 +215,25 @@ def validate_final_pdfs() -> int:
             f"{opts['L04_A']['sep_3wk_mean']:,.2f}",
             f"{meta['pairwise_L01A_L04A']['L01_A_mean']:,.2f}",
             f"{meta['pairwise_L01A_L04A']['L04_A_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['shared_sep_L01_A_mean']:,.2f}",
+            f"{meta['pairwise_L01A_L04A']['shared_late_L01_A_mean']:,.2f}",
+            "1,472.67 (n=3)",
         ]
     )
 
     miss_brief = [t for t in dict.fromkeys(brief_reqs) if t not in brief_text]
     miss_backup = [t for t in dict.fromkeys(backup_reqs) if t not in backup_text]
-    bad_claims = [c for c in ["L06_B's 5 slowest weeks", "L06_B's 5 lowest"] if c in brief_text or c in backup_text]
+    bad_phrases = [
+        "L06_B's 5 slowest weeks",
+        "L06_B's 5 lowest",
+        "1,497.12",
+        "1,236.67",
+        "1,790.00",
+        "1,516.67",
+        "same 3 September weeks",
+        "2-week pre-trial",
+    ]
+    bad_claims = [c for c in bad_phrases if c in brief_text or c in backup_text]
     c44 = len(miss_brief) == 0 and len(miss_backup) == 0 and len(bad_claims) == 0
     checks.append(
         (

@@ -14,11 +14,23 @@ import datetime
 import json
 import sys
 import zipfile
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
+
+
+def round_half_up(val: float | Decimal) -> float:
+    """Round to 2 decimal places using standard half-up (matching Tableau/Excel)."""
+    return float(Decimal(str(val)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+
+def mean_half_up(series: pd.Series) -> float:
+    """Compute exact arithmetic mean rounded half-up to 2 decimal places."""
+    vals = [int(round(float(x))) for x in series.tolist()]
+    return round_half_up(Decimal(sum(vals)) / Decimal(len(vals)))
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "Data"
@@ -400,25 +412,26 @@ def run_validation() -> int:
         missing_weeks = int(len(miss_rows))
         missing_dates = miss_rows["week_start"].astype(str).tolist()
         raw_sum = int(vals.sum())
-        mean = round(float(np.mean(vals)), 2)
-        median = round(float(np.median(vals)), 2)
-        sd = round(float(np.std(vals, ddof=1)), 2)
-        cv_pct = round(float(np.std(vals, ddof=1) / np.mean(vals) * 100.0), 2)
-        iqr = round(float(np.percentile(vals, 75) - np.percentile(vals, 25)), 2)
+        mean = round_half_up(Decimal(raw_sum) / Decimal(obs_weeks))
+        median = round_half_up(float(np.median(vals)))
+        sd = round_half_up(float(np.std(vals, ddof=1)))
+        cv_pct = round_half_up(float(np.std(vals, ddof=1) / np.mean(vals) * 100.0))
+        iqr = round_half_up(float(np.percentile(vals, 75) - np.percentile(vals, 25)))
         vmin = int(np.min(vals))
         vmax = int(np.max(vals))
 
         week_map = {
-            str(r["week_start"]): float(r["observed_passages"])
+            str(r["week_start"]): int(r["observed_passages"])
             for _, r in comp_rows.iterrows()
         }
-        roll_means: list[float] = []
+        roll_means_complete: list[float] = []
         for idx in range(len(all_weeks_sorted) - 3):
             block_vals = [
                 week_map[w] for w in all_weeks_sorted[idx : idx + 4] if w in week_map
             ]
-            if block_vals:
-                roll_means.append(round(sum(block_vals) / len(block_vals), 2))
+            # Strictly require 4 complete weeks matching actual pilot duration
+            if len(block_vals) == 4:
+                roll_means_complete.append(round_half_up(Decimal(sum(block_vals)) / Decimal(4)))
 
         s10 = comp_rows[~comp_rows["week_start"].isin(EXCLUDED_10WK_DATES)]["observed_passages"].astype(float)
         s9 = comp_rows[~comp_rows["week_start"].isin(EXCLUDED_9WK_DATES)]["observed_passages"].astype(float)
@@ -450,23 +463,24 @@ def run_validation() -> int:
             "iqr": iqr,
             "min": vmin,
             "max": vmax,
-            "rolling_4wk_min_mean": min(roll_means),
-            "rolling_4wk_max_mean": max(roll_means),
+            "rolling_4wk_complete_blocks": len(roll_means_complete),
+            "rolling_4wk_min_mean": min(roll_means_complete),
+            "rolling_4wk_max_mean": max(roll_means_complete),
             "shared_10wk_obs": int(len(s10)),
-            "shared_10wk_mean": round(float(s10.mean()), 2),
-            "shared_10wk_median": round(float(s10.median()), 2),
+            "shared_10wk_mean": mean_half_up(s10),
+            "shared_10wk_median": round_half_up(float(s10.median())),
             "shared_9wk_obs": int(len(s9)),
-            "shared_9wk_mean": round(float(s9.mean()), 2),
-            "shared_9wk_median": round(float(s9.median()), 2),
+            "shared_9wk_mean": mean_half_up(s9),
+            "shared_9wk_median": round_half_up(float(s9.median())),
             "shared_8wk_nonspike_obs": int(len(s8_ns)),
-            "shared_8wk_nonspike_mean": round(float(s8_ns.mean()), 2),
-            "shared_8wk_nonspike_median": round(float(s8_ns.median()), 2),
+            "shared_8wk_nonspike_mean": mean_half_up(s8_ns),
+            "shared_8wk_nonspike_median": round_half_up(float(s8_ns.median())),
             "late_4wk_obs": int(len(late4)),
-            "late_4wk_mean": round(float(late4.mean()), 2),
-            "late_4wk_median": round(float(late4.median()), 2),
+            "late_4wk_mean": mean_half_up(late4),
+            "late_4wk_median": round_half_up(float(late4.median())),
             "sep_3wk_obs": int(len(sep3)),
-            "sep_3wk_mean": round(float(sep3.mean()), 2),
-            "sep_3wk_median": round(float(sep3.median()), 2),
+            "sep_3wk_mean": mean_half_up(sep3),
+            "sep_3wk_median": round_half_up(float(sep3.median())),
         }
 
         if opt_id == "L06_B":
@@ -475,9 +489,9 @@ def run_validation() -> int:
                 "excluded_dates": L06_B_SPIKE_DATES,
                 "excluded_values": [2422, 2343],
                 "obs_weeks": int(len(trimmed)),
-                "mean": round(float(trimmed.mean()), 2),
-                "median": round(float(trimmed.median()), 2),
-                "sd": round(float(trimmed.std(ddof=1)), 2),
+                "mean": mean_half_up(trimmed),
+                "median": round_half_up(float(trimmed.median())),
+                "sd": round_half_up(float(trimmed.std(ddof=1))),
             }
 
         # Verify against Master Implementation Plan baseline table
@@ -506,35 +520,72 @@ def run_validation() -> int:
     pw_dates = sorted([str(idx) for idx in pw_df.index])
     l01a_pw_vals = pw_df["L01_A"].astype(float).to_numpy()
     l04a_pw_vals = pw_df["L04_A"].astype(float).to_numpy()
+    pw_diffs = l01a_pw_vals - l04a_pw_vals
+    pw_se = float(np.std(pw_diffs, ddof=1) / np.sqrt(len(pw_diffs)))
+    pw_sep = pw_df.loc[pw_df.index.isin(SEP_3WK_DATES)]
+    pw_late = pw_df.loc[pw_df.index.isin(LATE_4WK_DATES)]
+
+    # Simultaneous complete 4-week rolling blocks where both L01_A and L04_A have n=4
+    both_4wk_wins = 0
+    both_4wk_count = 0
+    for idx in range(len(all_weeks_sorted) - 3):
+        blk = all_weeks_sorted[idx : idx + 4]
+        sub_l01 = pw_df.loc[pw_df.index.isin(blk), "L01_A"]
+        sub_l04 = pw_df.loc[pw_df.index.isin(blk), "L04_A"]
+        # Use raw comp counts per option so each option's own 4-week completeness is checked
+        r01 = wa_df[(wa_df["option_id"] == "L01_A") & (wa_df["week_start"].isin(blk)) & (wa_df["observation_status"] == "Complete")]
+        r04 = wa_df[(wa_df["option_id"] == "L04_A") & (wa_df["week_start"].isin(blk)) & (wa_df["observation_status"] == "Complete")]
+        if len(r01) == 4 and len(r04) == 4:
+            both_4wk_count += 1
+            if r01["observed_passages"].mean() > r04["observed_passages"].mean():
+                both_4wk_wins += 1
+
     pairwise_12wk = {
         "obs_weeks": int(len(pw_dates)),
         "dates": pw_dates,
-        "L01_A_mean": round(float(np.mean(l01a_pw_vals)), 2),
-        "L01_A_median": round(float(np.median(l01a_pw_vals)), 2),
-        "L04_A_mean": round(float(np.mean(l04a_pw_vals)), 2),
-        "L04_A_median": round(float(np.median(l04a_pw_vals)), 2),
+        "L01_A_mean": mean_half_up(pw_df["L01_A"]),
+        "L01_A_median": round_half_up(float(np.median(l01a_pw_vals))),
+        "L04_A_mean": mean_half_up(pw_df["L04_A"]),
+        "L04_A_median": round_half_up(float(np.median(l04a_pw_vals))),
+        "mean_diff": round_half_up(float(np.mean(pw_diffs))),
+        "median_diff": round_half_up(float(np.median(pw_diffs))),
+        "sd_diff": round_half_up(float(np.std(pw_diffs, ddof=1))),
+        "se_diff": round_half_up(pw_se),
+        "t_stat": round_half_up(float(np.mean(pw_diffs)) / pw_se),
         "L01_A_weekly_wins": int((l01a_pw_vals > l04a_pw_vals).sum()),
         "L04_A_weekly_wins": int((l04a_pw_vals > l01a_pw_vals).sum()),
+        "shared_sep_obs": int(len(pw_sep)),
+        "shared_sep_L01_A_mean": mean_half_up(pw_sep["L01_A"]),
+        "shared_sep_L04_A_mean": mean_half_up(pw_sep["L04_A"]),
+        "shared_late_obs": int(len(pw_late)),
+        "shared_late_L01_A_mean": mean_half_up(pw_late["L01_A"]),
+        "shared_late_L04_A_mean": mean_half_up(pw_late["L04_A"]),
+        "simultaneous_4wk_blocks": both_4wk_count,
+        "L01_A_4wk_block_wins": both_4wk_wins,
         "listwise_excluded_pairwise_dates": [
             d for d in pw_dates if d in EXCLUDED_8WK_NONSPIKE_DATES
         ],
     }
 
-    # Window B vs. Window A premium across all 6 locations
+    # Window B vs. Window A premium & within-site correlation across all 6 locations
     win_b_vs_a: dict[str, dict[str, Any]] = {}
+    full_piv = wa_df.pivot(index="week_start", columns="option_id", values="observed_passages")
     for loc_num in range(1, 7):
         oa = options_out[f"L0{loc_num}_A"]
         ob = options_out[f"L0{loc_num}_B"]
+        loc_pair = full_piv[[f"L0{loc_num}_A", f"L0{loc_num}_B"]].dropna()
+        r_ab = float(np.corrcoef(loc_pair[f"L0{loc_num}_A"], loc_pair[f"L0{loc_num}_B"])[0, 1])
         win_b_vs_a[f"L0{loc_num}"] = {
             "location_name": oa["location_name"],
             "win_a_mean": oa["mean"],
             "win_b_mean": ob["mean"],
-            "mean_diff_b_minus_a": round(ob["mean"] - oa["mean"], 2),
+            "mean_diff_b_minus_a": round_half_up(ob["mean"] - oa["mean"]),
             "cost_diff_b_minus_a": ob["total_pilot_cost_usd"] - oa["total_pilot_cost_usd"],
+            "pearson_r_a_b": round(r_ab, 4),
         }
 
     ext_checks = [
-        ("L04_A.shared_8wk_nonspike_mean", options_out["L04_A"]["shared_8wk_nonspike_mean"], 1497.12),
+        ("L04_A.shared_8wk_nonspike_mean", options_out["L04_A"]["shared_8wk_nonspike_mean"], 1497.13),
         ("L06_B.shared_8wk_nonspike_mean", options_out["L06_B"]["shared_8wk_nonspike_mean"], 1428.25),
         ("L01_A.shared_8wk_nonspike_mean", options_out["L01_A"]["shared_8wk_nonspike_mean"], 1368.75),
         ("L01_A.sep_3wk_mean", options_out["L01_A"]["sep_3wk_mean"], 1520.00),
@@ -542,10 +593,12 @@ def run_validation() -> int:
         ("pairwise_12wk.obs_weeks", pairwise_12wk["obs_weeks"], 12),
         ("pairwise_12wk.L01_A_mean", pairwise_12wk["L01_A_mean"], 1482.08),
         ("pairwise_12wk.L04_A_mean", pairwise_12wk["L04_A_mean"], 1388.25),
-        ("L01_A.rolling_4wk_min_mean", options_out["L01_A"]["rolling_4wk_min_mean"], 1236.67),
-        ("L01_A.rolling_4wk_max_mean", options_out["L01_A"]["rolling_4wk_max_mean"], 1790.00),
+        ("pairwise_12wk.shared_sep_L01_A_mean", pairwise_12wk["shared_sep_L01_A_mean"], 1507.50),
+        ("pairwise_12wk.shared_late_L01_A_mean", pairwise_12wk["shared_late_L01_A_mean"], 1311.67),
+        ("L01_A.rolling_4wk_min_mean", options_out["L01_A"]["rolling_4wk_min_mean"], 1370.00),
+        ("L01_A.rolling_4wk_max_mean", options_out["L01_A"]["rolling_4wk_max_mean"], 1657.50),
         ("L04_A.rolling_4wk_min_mean", options_out["L04_A"]["rolling_4wk_min_mean"], 1285.75),
-        ("L04_A.rolling_4wk_max_mean", options_out["L04_A"]["rolling_4wk_max_mean"], 1516.67),
+        ("L04_A.rolling_4wk_max_mean", options_out["L04_A"]["rolling_4wk_max_mean"], 1420.00),
     ]
     for label, got, exp in ext_checks:
         if got != exp:
@@ -644,18 +697,21 @@ def run_validation() -> int:
         s10_cell = f"{o['shared_10wk_mean']:,.2f}"
         if o["shared_10wk_obs"] != 10:
             s10_cell += f" (n={o['shared_10wk_obs']})"
+        late_cell = f"{o['late_4wk_mean']:,.2f}"
+        if o["late_4wk_obs"] != 4:
+            late_cell += f" (n={o['late_4wk_obs']})"
         lines.append(
             f"| `{opt_id}` | {o['location_name']} | {o['window_id']} | ${o['total_pilot_cost_usd']:,} | "
             f"{o['within_budget']} | {o['obs_weeks']} | {o['missing_weeks']} | {o['raw_sum']:,} | "
             f"{o['mean']:,.2f} | {o['median']:,.2f} | {o['sd']:.2f} | {o['cv_pct']:.2f}% | "
             f"{o['iqr']:.2f} | {o['min']:,}–{o['max']:,} | {s10_cell} | "
-            f"{o['shared_9wk_mean']:,.2f} | {o['late_4wk_mean']:,.2f} |"
+            f"{o['shared_9wk_mean']:,.2f} | {late_cell} |"
         )
 
     lines.extend(
         [
             "",
-            "*Note: IQR uses continuous linear interpolation (`PERCENTILE.INC`); Tableau default Tukey hinges give `485.00` for `L01_A` and `309.00` for `L04_A`. In the `10-Wk Mean` column, over-budget `L05_B` missed `2026-07-27`, so its mean over the 10-week affordable window covers `n=9` observed weeks.*",
+            "*Note: Means use standard half-up rounding (`ROUND_HALF_UP`) to match Tableau display formatting. IQR uses continuous linear interpolation (`PERCENTILE.INC`); Tableau default Tukey hinges give `485.00` for `L01_A` and `309.00` for `L04_A`. In `10-Wk Mean`, over-budget `L05_B` missed `2026-07-27` (`n=9`); in `Late 4-Wk Mean`, `L04_A` missed `2026-09-07` (`n=3`).*",
             "",
             "## Key Sensitivity Benchmarks",
             "",
@@ -666,15 +722,18 @@ def run_validation() -> int:
             f"vs. `L01_A` Mean = `{options_out['L01_A']['shared_10wk_mean']:,.2f}` (Median `{options_out['L01_A']['shared_10wk_median']:,.2f}`)",
             f"- **Direct Pairwise Head-to-Head (`L01_A` vs. `L04_A`, `n=12` weeks where both have complete counts):** "
             f"`L01_A` Mean = `{pairwise_12wk['L01_A_mean']:,.2f}` (Median `{pairwise_12wk['L01_A_median']:,.2f}`) "
-            f"vs. `L04_A` Mean = `{pairwise_12wk['L04_A_mean']:,.2f}` (Median `{pairwise_12wk['L04_A_median']:,.2f}`); weekly wins split `{pairwise_12wk['L01_A_weekly_wins']}–{pairwise_12wk['L04_A_weekly_wins']}`",
+            f"vs. `L04_A` Mean = `{pairwise_12wk['L04_A_mean']:,.2f}` (Median `{pairwise_12wk['L04_A_median']:,.2f}`); weekly wins split `{pairwise_12wk['L01_A_weekly_wins']}–{pairwise_12wk['L04_A_weekly_wins']}` "
+            f"(mean diff `{pairwise_12wk['mean_diff']:+.2f}`, median diff `{pairwise_12wk['median_diff']:+.2f}`, `SE = {pairwise_12wk['se_diff']:.2f}`, `t = {pairwise_12wk['t_stat']:.2f}`)",
             f"- **Shared 8-Week Non-Spike Subset (`n=8`, excluding 6 missing-overlap weeks + `07-06` & `08-17` spikes):** "
             f"`L04_A` Mean = `{options_out['L04_A']['shared_8wk_nonspike_mean']:,.2f}` (Median `{options_out['L04_A']['shared_8wk_nonspike_median']:,.2f}`) "
             f"vs. `L06_B` Mean = `{options_out['L06_B']['shared_8wk_nonspike_mean']:,.2f}` and `L01_A` Mean = `{options_out['L01_A']['shared_8wk_nonspike_mean']:,.2f}`",
-            f"- **September 3-Week Rebound (`2026-09-07` to `2026-09-21`, apples-to-apples):** "
-            f"`L01_A` Mean = `{options_out['L01_A']['sep_3wk_mean']:,.2f}` (`n=3`) vs. `L04_A` Sep 3-Wk Mean = `{options_out['L04_A']['sep_3wk_mean']:,.2f}` (`n=2`; `L04_A` Late 4-Wk Mean incl. `08-31` = `{options_out['L04_A']['late_4wk_mean']:,.2f}`)",
-            f"- **4-Week Rolling Block Ranges (`13` overlapping 4-week windows):** "
-            f"`L01_A` = `{options_out['L01_A']['rolling_4wk_min_mean']:,.2f}–{options_out['L01_A']['rolling_4wk_max_mean']:,.2f}` vs. "
-            f"`L04_A` = `{options_out['L04_A']['rolling_4wk_min_mean']:,.2f}–{options_out['L04_A']['rolling_4wk_max_mean']:,.2f}`",
+            f"- **September & Late-Season Shared-Week Checks (Strictly Matched Weeks):** "
+            f"Across `n=2` shared September weeks (`09-14`, `09-21`), `L01_A` Mean = `{pairwise_12wk['shared_sep_L01_A_mean']:,.2f}` vs. `L04_A` = `{pairwise_12wk['shared_sep_L04_A_mean']:,.2f}` (`1–1` wins; `L01_A` all `n=3` Sep = `{options_out['L01_A']['sep_3wk_mean']:,.2f}`). "
+            f"Across `n=3` shared Late 4-Wk dates (`08-31`, `09-14`, `09-21`), `L01_A` Mean = `{pairwise_12wk['shared_late_L01_A_mean']:,.2f}` (`n=4` = `{options_out['L01_A']['late_4wk_mean']:,.2f}`) vs. `L04_A` = `{pairwise_12wk['shared_late_L04_A_mean']:,.2f}` (noting `L04` A/B correlate at `r = {win_b_vs_a['L04']['pearson_r_a_b']:.4f}` and `L04_B` dropped to `1,144` on `L04_A`'s missing `09-07` date).",
+            f"- **Complete 4-Week Rolling Block Ranges (`n=4` complete weeks per block only):** "
+            f"`L01_A` = `{options_out['L01_A']['rolling_4wk_min_mean']:,.2f}–{options_out['L01_A']['rolling_4wk_max_mean']:,.2f}` (`{options_out['L01_A']['rolling_4wk_complete_blocks']}/13` blocks) vs. "
+            f"`L04_A` = `{options_out['L04_A']['rolling_4wk_min_mean']:,.2f}–{options_out['L04_A']['rolling_4wk_max_mean']:,.2f}` (`{options_out['L04_A']['rolling_4wk_complete_blocks']}/13` blocks); "
+            f"`L01_A` led `{pairwise_12wk['L01_A_4wk_block_wins']}/{pairwise_12wk['simultaneous_4wk_blocks']}` simultaneous complete 4-week blocks.",
             "",
         ]
     )

@@ -3,7 +3,7 @@
 
 Preserves the starter's exact workbook metadata, manifest, connection,
 and object-graph relationship while adding verified calculated fields,
-column-instances, 6 structured worksheets, and matching window entries
+column-instances, 12 structured worksheets, and matching window entries
 following strict Tableau 18.1 / 2025.2 XML ordering rules.
 """
 
@@ -31,6 +31,10 @@ CALC_WEEKLY_SD = "[Calculation_2911717947329445891]"
 CALC_WEEKLY_CV = "[Calculation_2911717947329445892]"
 CALC_PAIRWISE_12WK = "[Calculation_2911717947329445893]"
 CALC_SHARED_8WK_NS = "[Calculation_2911717947329445894]"
+CALC_MISSING_RECS = "[Calculation_2911717947329445895]"
+CALC_SHARED_9WK = "[Calculation_2911717947329445896]"
+CALC_LATE_4WK = "[Calculation_2911717947329445897]"
+CALC_L06B_TRIM = "[Calculation_2911717947329445898]"
 
 AFFORDABLE_OPTIONS = [
     "L01_A", "L02_A", "L02_B", "L03_A", "L03_B", "L04_A", "L06_A", "L06_B"
@@ -347,6 +351,48 @@ def build_workbook() -> None:
                 'THEN "Shared 8 Non-Spike Weeks" ELSE "Excluded Missing or Spike Week" END'
             ),
         },
+        {
+            "caption": "Missing Weekly Records",
+            "datatype": "integer",
+            "default-format": "n#,##0;-#,##0",
+            "name": CALC_MISSING_RECS,
+            "role": "measure",
+            "type": "quantitative",
+            "formula": 'SUM(IF [observation_status] = "Missing" THEN 1 ELSE 0 END)',
+        },
+        {
+            "caption": "Shared 9-Week All-Options Flag",
+            "datatype": "string",
+            "name": CALC_SHARED_9WK,
+            "role": "dimension",
+            "type": "nominal",
+            "formula": (
+                "IF [week_start] != #2026-06-22# AND [week_start] != #2026-06-29# "
+                "AND [week_start] != #2026-07-20# AND [week_start] != #2026-07-27# "
+                "AND [week_start] != #2026-08-10# AND [week_start] != #2026-08-24# "
+                "AND [week_start] != #2026-09-07# "
+                'THEN "Shared 9 Weeks" ELSE "Excluded Missing Week" END'
+            ),
+        },
+        {
+            "caption": "Late 4-Week Flag",
+            "datatype": "string",
+            "name": CALC_LATE_4WK,
+            "role": "dimension",
+            "type": "nominal",
+            "formula": 'IF [week_start] >= #2026-08-31# THEN "Late 4 Weeks" ELSE "Earlier Summer Weeks" END',
+        },
+        {
+            "caption": "L06_B Non-Spike Flag",
+            "datatype": "string",
+            "name": CALC_L06B_TRIM,
+            "role": "dimension",
+            "type": "nominal",
+            "formula": (
+                'IF [option_id] = "L06_B" AND ([week_start] = #2026-07-06# OR [week_start] = #2026-08-17#) '
+                'THEN "Excluded L06_B Spike" ELSE "Included Week" END'
+            ),
+        },
     ]
     for nc in new_calcs:
         columns_catalog[nc["name"]] = nc
@@ -479,6 +525,48 @@ def build_workbook() -> None:
             "pivot": "key",
             "type": "quantitative",
         },
+        "[min:observed_passages:qk]": {
+            "column": "[observed_passages]",
+            "derivation": "Min",
+            "name": "[min:observed_passages:qk]",
+            "pivot": "key",
+            "type": "quantitative",
+        },
+        "[max:observed_passages:qk]": {
+            "column": "[observed_passages]",
+            "derivation": "Max",
+            "name": "[max:observed_passages:qk]",
+            "pivot": "key",
+            "type": "quantitative",
+        },
+        f"[usr:{CALC_MISSING_RECS.strip('[]')}:qk]": {
+            "column": CALC_MISSING_RECS,
+            "derivation": "User",
+            "name": f"[usr:{CALC_MISSING_RECS.strip('[]')}:qk]",
+            "pivot": "key",
+            "type": "quantitative",
+        },
+        f"[none:{CALC_SHARED_9WK.strip('[]')}:nk]": {
+            "column": CALC_SHARED_9WK,
+            "derivation": "None",
+            "name": f"[none:{CALC_SHARED_9WK.strip('[]')}:nk]",
+            "pivot": "key",
+            "type": "nominal",
+        },
+        f"[none:{CALC_LATE_4WK.strip('[]')}:nk]": {
+            "column": CALC_LATE_4WK,
+            "derivation": "None",
+            "name": f"[none:{CALC_LATE_4WK.strip('[]')}:nk]",
+            "pivot": "key",
+            "type": "nominal",
+        },
+        f"[none:{CALC_L06B_TRIM.strip('[]')}:nk]": {
+            "column": CALC_L06B_TRIM,
+            "derivation": "None",
+            "name": f"[none:{CALC_L06B_TRIM.strip('[]')}:nk]",
+            "pivot": "key",
+            "type": "nominal",
+        },
     }
 
     CI_WITHIN_BUDGET = f"[none:{CALC_WITHIN_BUDGET.strip('[]')}:nk]"
@@ -488,6 +576,10 @@ def build_workbook() -> None:
     CI_WEEKLY_CV = f"[usr:{CALC_WEEKLY_CV.strip('[]')}:qk]"
     CI_PAIRWISE_12WK = f"[none:{CALC_PAIRWISE_12WK.strip('[]')}:nk]"
     CI_SHARED_8WK_NS = f"[none:{CALC_SHARED_8WK_NS.strip('[]')}:nk]"
+    CI_MISSING_RECS = f"[usr:{CALC_MISSING_RECS.strip('[]')}:qk]"
+    CI_SHARED_9WK = f"[none:{CALC_SHARED_9WK.strip('[]')}:nk]"
+    CI_LATE_4WK = f"[none:{CALC_LATE_4WK.strip('[]')}:nk]"
+    CI_L06B_TRIM = f"[none:{CALC_L06B_TRIM.strip('[]')}:nk]"
 
     # Rebuild <datasource> preserving strict child ordering:
     # connection, aliases, column(s), column-instance(s), layout, style, semantic-values, object-graph
@@ -582,7 +674,10 @@ def build_workbook() -> None:
                 ["[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]", CI_SCHED_RECS]
             )
         ],
-        sorts=[build_computed_sort("[none:option_id:nk]", "[min:total_pilot_cost_usd:qk]", "DESC")],
+        sorts=[
+            build_computed_sort(CI_WITHIN_BUDGET, "[min:total_pilot_cost_usd:qk]", "ASC"),
+            build_computed_sort("[none:option_id:nk]", "[min:total_pilot_cost_usd:qk]", "DESC"),
+        ],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -657,7 +752,10 @@ def build_workbook() -> None:
         filters=[
             build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"])
         ],
-        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
+        sorts=[
+            build_computed_sort(CI_WITHIN_BUDGET, "[min:total_pilot_cost_usd:qk]", "ASC"),
+            build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC"),
+        ],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -687,21 +785,23 @@ def build_workbook() -> None:
         [
             CALC_WITHIN_BUDGET, "[total_pilot_cost_usd]", "[option_id]",
             "[location_name]", "[window_id]", "[observed_passages]",
-            CALC_WEEKLY_SD, CALC_WEEKLY_CV,
+            "[observation_status]", CALC_MISSING_RECS, CALC_WEEKLY_SD, CALC_WEEKLY_CV,
         ],
         [
             CI_WITHIN_BUDGET, "[none:option_id:nk]", "[none:location_name:nk]",
             "[none:window_id:nk]", "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+            CI_MISSING_RECS, "[sum:observed_passages:qk]",
             "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
             CI_WEEKLY_SD, CI_WEEKLY_CV,
+            "[min:observed_passages:qk]", "[max:observed_passages:qk]",
         ],
     )
     ws2b = build_worksheet(
         name="02b Dispersion & Cost Metrics Table",
-        title_text="02b Exact Decision Metrics Table - Cost, Weeks (n), Mean, Median, SD & CV% (All 12 Options)",
+        title_text="02b Exact Decision Metrics Table - Cost, n, Miss, Sum, Mean, Median, SD, CV% & Min-Max (All 12 Options)",
         caption_text=(
-            "Units: Passage events / 20-hr Tue-Sat week (Jun 8 - Sep 27, 2026). SD = sample Standard Deviation; CV = SD / Mean. "
-            "Matches Vitaly_Chait_Two_Page_Brief.pdf Page 1 table; note IQR in PDF uses PERCENTILE.INC (Tableau boxplots use Tukey hinges: L01_A=485.00, L04_A=309.00)."
+            "Units: Passage events / 20-hr Tue-Sat week (Jun 8 - Sep 27, 2026). Displays all 10 Tableau-aggregated metrics matching Vitaly_Chait_Two_Page_Brief.pdf Page 1 table "
+            "(IQR column in PDF adds continuous PERCENTILE.INC: L01_A=477.50, L04_A=281.75; Tableau boxplots use Tukey hinges: 485.00 & 309.00)."
         ),
         dep_columns=ws2b_cols,
         dep_instances=ws2b_cis,
@@ -709,12 +809,17 @@ def build_workbook() -> None:
             build_measure_names_filter(
                 [
                     "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+                    CI_MISSING_RECS, "[sum:observed_passages:qk]",
                     "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
                     CI_WEEKLY_SD, CI_WEEKLY_CV,
+                    "[min:observed_passages:qk]", "[max:observed_passages:qk]",
                 ]
             )
         ],
-        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
+        sorts=[
+            build_computed_sort(CI_WITHIN_BUDGET, "[min:total_pilot_cost_usd:qk]", "ASC"),
+            build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC"),
+        ],
         rows_expr=(
             f"({fq(CI_WITHIN_BUDGET)} / ({fq('[none:option_id:nk]')} / "
             f"({fq('[none:location_name:nk]')} / {fq('[none:window_id:nk]')})))"
@@ -725,12 +830,16 @@ def build_workbook() -> None:
         text_formats=[
             (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
             (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+            (fq(CI_MISSING_RECS), "n#,##0;-#,##0"),
+            (fq("[sum:observed_passages:qk]"), "n#,##0;-#,##0"),
             (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
             (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
             (fq(CI_WEEKLY_SD), "n#,##0.00;-#,##0.00"),
             (fq(CI_WEEKLY_CV), "0.00%"),
+            (fq("[min:observed_passages:qk]"), "n#,##0;-#,##0"),
+            (fq("[max:observed_passages:qk]"), "n#,##0;-#,##0"),
         ],
-        cell_widths=[(fq("[:Measure Names]"), "115")],
+        cell_widths=[(fq("[:Measure Names]"), "95")],
     )
 
     # 6. Worksheet: 03 Weekly Trajectory & Outliers
@@ -883,8 +992,8 @@ def build_workbook() -> None:
         name="04c Shared 8-Wk Non-Spike Audit",
         title_text="04c Shared 8-Week Non-Spike Check (Top Contenders Excluding 6 Missing-Overlap Dates & L06_B Spikes)",
         caption_text=(
-            "Filter: Top 4 contenders across 8 non-spike shared weeks (excludes 6 missing dates plus L06_B spikes 07-06 & 08-17). L04_A leads (1,497.12 vs L06_B 1,428.25, L01_A 1,368.75), "
-            "noting this excludes two peak L01_A weeks (07-06=1,875, 08-17=1,245) alongside 07-20 & 08-10."
+            "Filter: Top 4 contenders across 8 non-spike shared weeks (excludes 6 missing dates plus L06_B spikes 07-06 & 08-17). L04_A leads (1,497.13 vs L06_B 1,428.25, L01_A 1,368.75), "
+            "noting this drops L01_A's strong 07-06 (1,875) and low 08-17 (1,245) alongside 07-20 (1,970) and 08-10 (1,745)."
         ),
         dep_columns=ws4c_cols,
         dep_instances=ws4c_cis,
@@ -914,7 +1023,148 @@ def build_workbook() -> None:
         ],
     )
 
-    worksheets = [ws1, ws1b, ws1c, ws2, ws2b, ws3, ws4, ws4b, ws4c]
+    # 10. Worksheet: 04d Shared 9-Wk All-Options Audit
+    ws4d_cols, ws4d_cis = deps_for(
+        [
+            CALC_SHARED_9WK, "[week_start]", "[option_id]", "[location_name]",
+            "[window_id]", "[total_pilot_cost_usd]", "[observed_passages]",
+        ],
+        [
+            CI_SHARED_9WK, "[none:option_id:nk]", "[none:location_name:nk]",
+            "[none:window_id:nk]", "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
+            "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+        ],
+    )
+    ws4d = build_worksheet(
+        name="04d Shared 9-Wk All-Options Audit",
+        title_text="04d Shared 9-Week Complete-Panel Check (8 Affordable Options, All 12 Complete Simultaneously)",
+        caption_text=(
+            "Filter: 8 Affordable Options across the 9 weeks where ALL 12 options (incl. L05_B) have complete counts (additionally removes 2026-07-27). "
+            "Matches Brief Page 2 & Backup View 4 Shared 9-Wk regime (L06_B 1,649.44, L04_A 1,455.56, L01_A 1,423.33, L02_B 1,290.00)."
+        ),
+        dep_columns=ws4d_cols,
+        dep_instances=ws4d_cis,
+        filters=[
+            build_categorical_filter(CI_SHARED_9WK, ["Shared 9 Weeks"], quote_members=True),
+            build_categorical_filter("[none:option_id:nk]", AFFORDABLE_OPTIONS, quote_members=True),
+            build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
+        ],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
+        rows_expr=(
+            f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
+            f"{fq('[none:window_id:nk]')}))"
+        ),
+        cols_expr=f"({fq('[:Measure Names]')} * {fq('[Multiple Values]')})",
+        mark_class="Bar",
+        encodings=[
+            ("color", fq("[none:option_id:nk]")),
+            ("text", fq("[Multiple Values]")),
+            ("lod", fq("[min:total_pilot_cost_usd:qk]")),
+            ("lod", fq("[cnt:observed_passages:qk]")),
+        ],
+        text_formats=[
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
+            (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+        ],
+    )
+
+    # 11. Worksheet: 04e Late 4-Wk Seasonality Check
+    ws4e_cols, ws4e_cis = deps_for(
+        [
+            CALC_LATE_4WK, "[week_start]", "[option_id]", "[location_name]",
+            "[window_id]", "[total_pilot_cost_usd]", "[observed_passages]",
+        ],
+        [
+            CI_LATE_4WK, "[none:option_id:nk]", "[none:location_name:nk]",
+            "[none:window_id:nk]", "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
+            "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+        ],
+    )
+    ws4e = build_worksheet(
+        name="04e Late 4-Wk Seasonality Check",
+        title_text="04e Late-Season 4-Week Sensitivity Check (Aug 31 - Sep 21, 2026; 8 Affordable Options)",
+        caption_text=(
+            "Filter: 8 Affordable Options over Aug 31 - Sep 21 (Week Start >= 2026-08-31). L04_A leads at 1,472.67 (n=3; missing 09-07 when L04_B fell to 1,144) "
+            "vs. L06_B (1,420.00, n=4), L01_A (1,370.00, n=4; 1,311.67 on shared n=3), and L02_B (1,281.25, n=4). Tooltip displays exact observed n."
+        ),
+        dep_columns=ws4e_cols,
+        dep_instances=ws4e_cis,
+        filters=[
+            build_categorical_filter(CI_LATE_4WK, ["Late 4 Weeks"], quote_members=True),
+            build_categorical_filter("[none:option_id:nk]", AFFORDABLE_OPTIONS, quote_members=True),
+            build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
+        ],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
+        rows_expr=(
+            f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
+            f"{fq('[none:window_id:nk]')}))"
+        ),
+        cols_expr=f"({fq('[:Measure Names]')} * {fq('[Multiple Values]')})",
+        mark_class="Bar",
+        encodings=[
+            ("color", fq("[none:option_id:nk]")),
+            ("text", fq("[Multiple Values]")),
+            ("lod", fq("[min:total_pilot_cost_usd:qk]")),
+            ("lod", fq("[cnt:observed_passages:qk]")),
+        ],
+        text_formats=[
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
+            (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+        ],
+    )
+
+    # 12. Worksheet: 04f L06_B Spike-Trimmed Check
+    ws4f_cols, ws4f_cis = deps_for(
+        [
+            CALC_L06B_TRIM, "[week_start]", "[option_id]", "[location_name]",
+            "[window_id]", "[total_pilot_cost_usd]", "[observed_passages]",
+        ],
+        [
+            CI_L06B_TRIM, "[none:option_id:nk]", "[none:location_name:nk]",
+            "[none:window_id:nk]", "[avg:observed_passages:qk]", "[med:observed_passages:qk]",
+            "[min:total_pilot_cost_usd:qk]", "[cnt:observed_passages:qk]",
+        ],
+    )
+    ws4f = build_worksheet(
+        name="04f L06_B Spike-Trimmed Check",
+        title_text="04f Outlier Trimming Check - Top 4 Contenders with L06_B Spikes Excluded (n=13 for L06_B)",
+        caption_text=(
+            "Filter: Top 4 contenders, excluding L06_B's two isolated summer spikes (2026-07-06=2,422 and 2026-08-17=2,343) while keeping all observed weeks for L01_A, L04_A, and L02_B. "
+            "L06_B collapses to 1,282.62 Mean (1,274.00 Med, n=13), falling behind both L04_A (1,401.36) and L02_B (1,325.73)."
+        ),
+        dep_columns=ws4f_cols,
+        dep_instances=ws4f_cis,
+        filters=[
+            build_categorical_filter(CI_L06B_TRIM, ["Included Week"], quote_members=True),
+            build_categorical_filter("[none:option_id:nk]", ["L01_A", "L04_A", "L06_B", "L02_B"], quote_members=True),
+            build_measure_names_filter(["[avg:observed_passages:qk]", "[med:observed_passages:qk]"]),
+        ],
+        sorts=[build_computed_sort("[none:option_id:nk]", "[avg:observed_passages:qk]", "DESC")],
+        rows_expr=(
+            f"({fq('[none:option_id:nk]')} / ({fq('[none:location_name:nk]')} / "
+            f"{fq('[none:window_id:nk]')}))"
+        ),
+        cols_expr=f"({fq('[:Measure Names]')} * {fq('[Multiple Values]')})",
+        mark_class="Bar",
+        encodings=[
+            ("color", fq("[none:option_id:nk]")),
+            ("text", fq("[Multiple Values]")),
+            ("lod", fq("[min:total_pilot_cost_usd:qk]")),
+            ("lod", fq("[cnt:observed_passages:qk]")),
+        ],
+        text_formats=[
+            (fq("[avg:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[med:observed_passages:qk]"), "n#,##0.00;-#,##0.00"),
+            (fq("[min:total_pilot_cost_usd:qk]"), 'c"$"#,##0;("$"#,##0)'),
+            (fq("[cnt:observed_passages:qk]"), "n#,##0;-#,##0"),
+        ],
+    )
+
+    worksheets = [ws1, ws1b, ws1c, ws2, ws2b, ws3, ws4, ws4b, ws4c, ws4d, ws4e, ws4f]
     ws_parent = root.find("worksheets")
     assert ws_parent is not None
     for child in list(ws_parent):

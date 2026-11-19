@@ -146,8 +146,8 @@ def draw_static_chart(
 
     plot_top = y_top - 32
     plot_bottom = y_top - height + 18
-    # 12 rows + 1 divider gap between affordable (8) and over-budget (4)
-    total_units = 12.6
+    # 12 rows + 1 full-row divider gap between affordable (8) and over-budget (4)
+    total_units = 13.0
     row_h = (plot_top - plot_bottom) / total_units
 
     # Vertical gridlines
@@ -174,8 +174,8 @@ def draw_static_chart(
 
     for idx, oid in enumerate(ordered_ids):
         o = opts[oid]
-        # Shift down by 0.6 row after index 7 for budget boundary divider
-        slot = idx + (0.6 if idx >= 8 else 0.0)
+        # Shift down by 1.0 row after index 7 for clean budget boundary divider clearance
+        slot = idx + (1.0 if idx >= 8 else 0.0)
         cy = plot_top - (slot + 0.5) * row_h
 
         # Alternating subtle row tint
@@ -257,15 +257,15 @@ def draw_static_chart(
 
         # Budget boundary divider after row index 7
         if idx == 7:
-            div_y = plot_top - 8.3 * row_h
+            div_y = plot_top - 8.65 * row_h
             c.setStrokeColor(RED_ACCENT)
             c.setLineWidth(0.9)
             c.setDash(3, 2)
             c.line(x + 4, div_y, x + width - 4, div_y)
             c.setDash()
             c.setFillColor(RED_ACCENT)
-            c.setFont("Helvetica-Bold", 6.6)
-            c.drawString(x + pad, div_y + 2.0, "AFFORDABLE (<= $18,000 BUDGET CAP) ABOVE  |  OVER-BUDGET (> $18,000, EXCLUDED) BELOW")
+            c.setFont("Helvetica-Bold", 6.3)
+            c.drawString(x + pad, div_y + 3.0, "AFFORDABLE (<= $18,000 BUDGET CAP) ABOVE  |  OVER-BUDGET (> $18,000, EXCLUDED) BELOW")
 
     return y_top - height
 
@@ -410,15 +410,15 @@ def build_checkpoint_pdf() -> None:
     y -= 7
 
     # 4. Static View (Visualization)
-    chart_h = 266.0
+    chart_h = 256.0
     y = draw_static_chart(c, golden, margin_x, y, content_w, chart_h)
-    y -= 7
+    y -= 6
 
     # 5. Unresolved Question
     y = draw_section_header(c, "5", "Unresolved Question & Key Checks Before Final Decision", margin_x, y, content_w)
     y = draw_para(
         c,
-        "&bull; <b>Shared-Week Overlap (10-Wk All-Affordable vs. 12-Wk Pairwise):</b> Excluding all 6 missing-overlap dates across the 8 affordable sites drops L01_A's average to <b>1,407.00</b> (median 1,390.00), letting <b>L04_A lead at 1,449.70</b> (median 1,458.50). However, 2 excluded dates (07-20, 08-10) came from other sites while L01_A and L04_A share <b>12 pairwise weeks</b> where L01_A leads <b>1,482.08 vs. 1,388.25</b> (6-6 weekly wins).",
+        "&bull; <b>Shared-Week Overlap (10-Wk All-Affordable vs. 12-Wk Pairwise):</b> Excluding all 6 missing-overlap dates across the 8 affordable sites drops L01_A's average to <b>1,407.00</b> (median 1,390.00), letting <b>L04_A lead at 1,449.70</b> (median 1,458.50). Yet 2 excluded dates (07-20, 08-10) came from other sites while L01_A &amp; L04_A share <b>12 pairwise weeks</b> where L01_A leads <b>1,482.08 vs. 1,388.25</b> (6-6 wins; median diff -1.50).",
         bullet_style,
         margin_x,
         y,
@@ -426,7 +426,7 @@ def build_checkpoint_pdf() -> None:
     )
     y = draw_para(
         c,
-        "&bull; <b>Spikes &amp; Autumn Seasonality:</b> Removing <i>L06_B</i>'s two unexplained spikes (<b>2,422</b> on 07-06; <b>2,343</b> on 08-17) lowers its <i>n=13</i> average to <b>1,282.62</b>. Over the last 4 weeks (Aug 31 - Sep 21), <i>L04_A</i> averages <b>1,472.67</b> vs. <i>L01_A</i> <b>1,370.00</b>, yet across the 3 September weeks alone <i>L01_A</i> rebounded to <b>1,520.00</b> (<i>n=3</i>) vs. <i>L04_A</i> <b>1,459.00</b> (<i>n=2</i>).",
+        "&bull; <b>Spikes, Missingness &amp; Seasonality:</b> Dropping <i>L06_B</i>'s spikes (<b>2,422</b> on 07-06; <b>2,343</b> on 08-17) pulls its <i>n=13</i> mean to <b>1,282.62</b>. Over Aug 31-Sep 21, <i>L04_A</i> averages <b>1,472.67</b> (<i>n=3</i>; missing 09-07 when <i>L04_B</i> hit 1,144) vs. <i>L01_A</i> <b>1,370.00</b> (<i>n=4</i>; <b>1,311.67</b> shared <i>n=3</i>). On 2 shared Sep weeks (09-14, 09-21), <i>L01_A</i> leads <b>1,507.50</b> (3 Sep wks <b>1,520.00</b>) vs. <i>L04_A</i> <b>1,459.00</b>.",
         bullet_style,
         margin_x,
         y,
@@ -437,10 +437,10 @@ def build_checkpoint_pdf() -> None:
     # Suggested Narrative Template Callout Box
     tmpl_html = (
         "<b>Suggested Narrative Template (Completed):</b><br/>"
-        "&bull; <b>Decision:</b> I am deciding between <b>L01_A (Cedar Walk, Window A, $18,000)</b> and <b>L04_A (Birch Arcade, Window A, $17,500) / L06_B (Aspen Court, Window B, $16,000)</b> for <b>testing customer interest in a 4-week reusable-goods pop-up trial (Oct 12 - Nov 8, 2026; 80 scheduled hours)</b>, within <b>the $18,000 total pilot budget constraint</b>.<br/>"
+        "&bull; <b>Decision:</b> We are deciding between <b>L01_A (Cedar Walk, Window A, $18,000)</b> and <b>L04_A (Birch Arcade, Window A, $17,500) / L06_B (Aspen Court, Window B, $16,000)</b> for <b>testing shopper engagement in a 4-week reusable-goods pop-up trial (Oct 12 - Nov 8, 2026; 80 scheduled hours)</b>, within <b>the $18,000 total pilot budget constraint</b>.<br/>"
         "&bull; <b>Measurement:</b> Our measure is <b>Average and Typical Median passage events per 20-hour Tue-Sat week across Jun 8 - Sep 27, 2026 (16 weeks total; 8 missing rows left blank and excluded from denominators, n = 14 to 16)</b>.<br/>"
         "&bull; <b>View:</b> The view suggests <b>L01_A leads all 8 affordable options in both Mean (1,510.00) and Median (1,535.00), ahead of L06_B (1,429.27 mean / 1,327.00 median) and L04_A (1,401.36 mean / 1,424.50 median)</b>.<br/>"
-        "&bull; <b>TODO:</b> I still need to check <b>listwise vs. pairwise missing-week effects (10-wk: L04_A 1,449.70 vs. L01_A 1,407.00; 12-wk pairwise: 1,482.08 vs. 1,388.25), L06_B's two spikes (2,422 and 2,343; trimmed 1,282.62), and October-November seasonality</b>."
+        "&bull; <b>TODO:</b> We still need to check <b>the operational causes of L01_A's missing weeks (06-29, 08-24) and L04_A's missing 09-07 week, whether Oct-Nov autumn seasonality erodes L01_A's narrow 6-6 paired edge over L04_A, and what fraction of crossings are repeat passersby</b>."
     )
     tp = Paragraph(tmpl_html, callout_style)
     _, th = tp.wrap(content_w - 14, 200)

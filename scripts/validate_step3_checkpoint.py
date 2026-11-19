@@ -144,6 +144,8 @@ def validate_checkpoint() -> int:
         f"{meta['pairwise_L01A_L04A']['L04_A_mean']:,.2f}",
         f"{opts['L01_A']['sep_3wk_mean']:,.2f}",
         f"{opts['L04_A']['sep_3wk_mean']:,.2f}",
+        f"{meta['pairwise_L01A_L04A']['shared_sep_L01_A_mean']:,.2f}",
+        f"{meta['pairwise_L01A_L04A']['shared_late_L01_A_mean']:,.2f}",
         f"{opts['L06_B']['spike_trimmed']['mean']:,.2f}",
         f"${opts['L01_A']['total_pilot_cost_usd']:,}",
         f"${opts['L04_A']['total_pilot_cost_usd']:,}",
@@ -161,14 +163,18 @@ def validate_checkpoint() -> int:
         expected_tokens.append(f"{o['median']:,.2f}")
 
     missing_metrics = [tok for tok in dict.fromkeys(expected_tokens) if tok not in text]
-    c35 = len(missing_metrics) == 0
+    bad_phrases = [
+        p for p in ("3 September weeks alone", "exact same September weeks")
+        if p in text
+    ]
+    c35 = len(missing_metrics) == 0 and len(bad_phrases) == 0
     checks.append(
         (
             "Check 3.5 (Metric Parity)",
             c35,
             f"all {len(dict.fromkeys(expected_tokens))} baseline metrics verified"
             if c35
-            else f"missing={missing_metrics}",
+            else f"missing={missing_metrics}, bad_phrases={bad_phrases}",
         )
     )
 

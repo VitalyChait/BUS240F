@@ -29,3 +29,4 @@ Verify the raw source CSV files (`Data/Candidate_Options.csv` and `Data/Weekly_A
   - `L01_A` on `2026-06-29` has `observation_status == 'Missing'` and `observed_passages` is null/blank.
 - [ ] **Check 1.6 (Budget Rule):** `total_pilot_cost_usd <= 18000` classifies exactly `8` options as `Within Budget = True` (`L01_A`, `L02_A`, `L02_B`, `L03_A`, `L03_B`, `L04_A`, `L06_A`, `L06_B`) and `4` options as `False` (`L04_B`, `L05_A`, `L01_B`, `L05_B`).
 - [ ] **Check 1.7 (Starter Package Parity):** Embedded CSVs inside `BUS240F_Final_Project_Starter.twbx` match standalone CSVs 100%.
+- [ ] **Check 1.8 (Baseline Reference Table Parity):** All 12 option metrics (`ROUND_HALF_UP`), sensitivity subsets (`10-Wk`, `9-Wk`, `8-Wk Non-Spike`, `Late 4-Wk`, `Sep 3-Wk`, `Spike-Trimmed`), `12-Wk` pairwise uncertainty stats, Window A/B correlations, and complete `n=4` rolling 4-week blocks match 100%.

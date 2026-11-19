@@ -5,19 +5,19 @@ Create a rock-solid, fully populated Packaged Tableau Workbook (`Vitaly_Chait_Fi
 
 ---
 
-## Planned Worksheets in `Vitaly_Chait_Final_Project_Workbook.twbx` (9 Worksheets with Titles, Captions & Ranked Sorts)
+## Planned Worksheets in `Vitaly_Chait_Final_Project_Workbook.twbx` (12 Worksheets with Titles, Captions & Ranked Sorts)
 
 1. **`01 Verify the Model`**
    - **Purpose:** Baseline model verification required by Section 4 of the Data Dictionary & Starter Guide.
    - **Structure:** `Observation Status` on Rows (`Complete` = 184, `Missing` = 8), showing `Scheduled Weekly Records` (`COUNT([week_start])` = `192` total), `COUNT(Observed Passages)` (`184`), and `SUM(Observed Passages)` (`256,773` total passages across all 12 options).
 2. **`01b Option Cost & Completeness Audit`**
-   - **Purpose:** Verify all 12 candidate options (sorted descending by fixed cost via `<sort class='computed'>`), budget status (`Within Budget`), single fixed 4-week cost (`MIN(Total Pilot Cost Usd)`), observed weeks (`COUNT(Observed Passages)` = 14..16), and scheduled rows (`16`).
+   - **Purpose:** Verify all 12 candidate options (`Within Budget` sorted `ASC` by `MIN(Total Pilot Cost Usd)` so `True` appears above `False`; options sorted descending by fixed cost), single fixed 4-week cost (`MIN(Total Pilot Cost Usd)`), observed weeks (`COUNT(Observed Passages)` = 14..16), and scheduled rows (`16`).
 3. **`01c Representative Source Check (L01_A)`**
    - **Purpose:** Directly verify the starter guide's two benchmark rows for `L01_A`: week starting `2026-06-08` (`Complete`, `1,175` passages) and week starting `2026-06-29` (`Missing`, blank count).
 4. **`02 Build the Decision`**
-   - **Purpose:** Primary decision bar view comparing all 12 candidate options grouped by `Within Budget` (`True` vs. `False`, sorted descending by performance), displaying `AVG(Observed Passages)`, `MEDIAN(Observed Passages)`, with `Weekly SD`, `Weekly CV`, `MIN(Total Pilot Cost Usd)`, and `COUNT(Observed Passages)` in tooltip/LOD.
+   - **Purpose:** Primary decision bar view comparing all 12 candidate options grouped by `Within Budget` (`True` sorted above `False`, ranked descending by performance), displaying `AVG(Observed Passages)`, `MEDIAN(Observed Passages)`, with `Weekly SD`, `Weekly CV`, `MIN(Total Pilot Cost Usd)`, and `COUNT(Observed Passages)` in tooltip/LOD.
 5. **`02b Dispersion & Cost Metrics Table`**
-   - **Purpose:** Exact numerical cross-tab showing `MIN(Total Pilot Cost Usd)`, `COUNT(Observed Passages)`, `AVG`, `MEDIAN`, `Weekly SD`, and `Weekly CV` in ranked order matching the Two-Page Brief.
+   - **Purpose:** Exact numerical cross-tab showing `MIN(Total Pilot Cost Usd)`, `COUNT(Observed Passages)`, `Missing Weekly Records`, `SUM(Observed Passages)`, `AVG`, `MEDIAN`, `Weekly SD`, `Weekly CV`, `MIN(Observed Passages)`, and `MAX(Observed Passages)` in ranked order matching the Two-Page Brief Page 1 table (with caption documenting `PERCENTILE.INC` vs. Tukey hinge IQR).
 6. **`03 Weekly Trajectory & Outliers`**
    - **Purpose:** Weekly time-series across the 16 historical weeks (`2026-06-08` to `2026-09-21`, covering `Jun 8 – Sep 27, 2026`) filtered to the 8 affordable options, visually revealing `L06_B`'s two extreme spikes (`2,422` and `2,343`), `L01_A`'s `08-31` dip (`920`), and missing-week breaks.
 7. **`04 Shared-Week Sensitivity Test`**
@@ -25,7 +25,13 @@ Create a rock-solid, fully populated Packaged Tableau Workbook (`Vitaly_Chait_Fi
 8. **`04b Pairwise L01_A vs L04_A (12 Wk)`**
    - **Purpose:** Direct head-to-head filter (`Pairwise L01_A vs L04_A Flag`) over all `12` weeks where BOTH `L01_A` and `L04_A` are complete, proving `L01_A` leads `1,482.08` to `1,388.25`.
 9. **`04c Shared 8-Wk Non-Spike Audit`**
-   - **Purpose:** Top-4 contenders across the `8` non-spike shared weeks (`Shared 8-Week Non-Spike Flag`), matching Brief & Static Backup View 4 (`L04_A 1,497.12`, `L06_B 1,428.25`, `L01_A 1,368.75`).
+   - **Purpose:** Top-4 contenders across the `8` non-spike shared weeks (`Shared 8-Week Non-Spike Flag`), matching Tableau half-up precision (`L04_A 1,497.13`, `L06_B 1,428.25`, `L01_A 1,368.75`).
+10. **`04d Shared 9-Wk All-Options Audit`**
+    - **Purpose:** Tests the `9`-week all-12-complete subset (`Shared 9-Week All-Options Flag`), verifying Brief Page 2 & Backup View 4 (`L06_B 1,649.44`, `L04_A 1,455.56`, `L01_A 1,423.33`).
+11. **`04e Late 4-Wk Seasonality Check`**
+    - **Purpose:** Evaluates `Aug 31 – Sep 21` (`Late 4-Week Flag`) across the 8 affordable options (`L04_A 1,472.67` at `n=3`, `L06_B 1,420.00`, `L01_A 1,370.00`).
+12. **`04f L06_B Spike-Trimmed Check`**
+    - **Purpose:** Excludes `L06_B`'s two summer spikes (`07-06=2,422`, `08-17=2,343`) via `L06_B Non-Spike Flag`, proving `L06_B` falls to `1,282.62` (`n=13`) behind `L04_A` (`1,401.36`) and `L02_B` (`1,325.73`).
 
 ---
 
@@ -86,8 +92,8 @@ To guarantee that Tableau Desktop loads the `.twbx` without any schema errors or
 - [ ] **Check 2.14:** Every `<column-instance column='[base_col]'>` in `<datasource-dependencies>` has its corresponding `<column name='[base_col]'>` declared in `<datasource-dependencies>` AND in the main `<datasource>`.
 - [ ] **Check 2.15:** Inside `<datasource-dependencies>`, all `<column>` elements appear before all `<column-instance>` elements.
 - [ ] **Check 2.16:** Every `<pane>` has `<view><breakdown value='auto' /></view>` and `<mark class='...' />` in the proper order before `<encodings>`.
-- [ ] **Check 2.17:** `<worksheets>` and `<windows>` have an exact 1-to-1 match of worksheet names, and exactly one `<window>` has `maximized='true'`.
-- [ ] **Check 2.18:** All `<simple-id uuid='{...}' />` attributes across the entire workbook are valid uppercase UUIDs in braces with zero duplicates.
+- [ ] **Check 2.17:** `<worksheets>` and `<windows>` have an exact 1-to-1 match of all 12 worksheet names, `[Within Budget]` sorts `ASC` so `True` appears above `False`, and exactly one `<window>` has `maximized='true'`.
+- [ ] **Check 2.18:** All `24` `<simple-id uuid='{...}' />` attributes across the entire workbook are valid uppercase UUIDs in braces with zero duplicates.
 
 ---
 
