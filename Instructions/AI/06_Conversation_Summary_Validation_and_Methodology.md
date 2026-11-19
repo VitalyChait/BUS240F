@@ -115,6 +115,20 @@ A full forensic re-audit from `Instructions/final_project_start_here_guide.md` t
 4. **Tableau `.twbx` Fixes (`12` Sheets):** Added `<sort class='computed' direction='ASC' using='MIN(Total Pilot Cost Usd)'>` on `[Within Budget]` in `01b`, `02`, `02b` (putting `True` above `False`), fixed Sheet `04c`'s false `"two peak L01_A weeks (07-06=1,875, 08-17=1,245)"` caption, expanded `02b` to all `10` Tableau-aggregated metrics, and added `04d` (`Shared 9-Wk`), `04e` (`Late 4-Wk`), and `04f` (`L06_B Spike-Trimmed`) matching PDF sensitivity views.
 5. **Visual PDF Collision Fixes & Homework Alignment:** Fixed the `AFFORDABLE...` red divider overlap on `L03_A` (Two-Page Brief Page 1 and Checkpoint Page 1), eliminated the `L04_A Steady` leader-line crossing on Static Backup Page 3 (`w_idx=11, dx=4, dy=152`), fixed Checkpoint Section 5 vs. `TODO` contradiction, and added a 4-member team presentation/defense speaking allocation in `Deliverables/Presentation_and_Defense_Guide.md`.
 
+### Stage 7 — Budget-Flexibility Counterfactual Analysis (`> $18,000`) & Two-Page Brief Callout Restructure
+During side-thread Q&A and executive readability review, Vitaly evaluated what option would win if the `$18,000` budget cap were flexible and updated `Vitaly_Chait_Two_Page_Brief.pdf` (Page 1) accordingly:
+
+1. **Counterfactual Summary — If the `$18,000` Cap Were Flexible (Percentage Comparison vs. `L01_A`):**
+   - Baseline within-budget recommendation **`L01_A`** (`$18,000`, `n = 14/16`): Mean `1,510.00`, Median `1,535.00`, `CV = 20.04%`, Min `920`, Shared 9-Wk Mean `1,423.33`, efficiency `335.56` expected 4-week passages per `$1k`.
+   - **`L05_B` (Juniper Row, Window B, `$21,000`, `+16.67%` / `+$3,000`) — Best Overall Statistical Winner (dropped solely due to hard cap):**
+     - Delivers **`+14.66%` higher Mean** (`1,731.40`) and **`+14.46%` higher Median** (`1,757.00`), **`+22.54%`** on Shared 9-Wk Mean (`1,744.11`), and **`+13.09%`** (`9–4` wins) across 13 pairwise shared weeks (`n = 15/16`).
+     - Cuts relative volatility by **`-50.10%`** (`CV = 10.00%`, `-10.04 pp`) and raises the worst-week floor by **`+61.96%`** (`Min = 1,490`), at nearly proportional cost efficiency (`329.79` passages/`$1k`, `-1.72%`). Considering the 4-week (`80`-hr) multiplier and scale, `L05_B` would replace `L01_A` if `+$3,000` flexibility existed.
+   - **`L05_A` (Juniper Row, Window A, `$19,000`, `+5.56%` / `+$1,000`) — Best Small-Stretch Value Upgrade:**
+     - Eliminates missing weeks (`16/16` complete), lifts Mean **`+6.17%`** (`1,603.19`) and Median **`+3.58%`** (`1,590.00`), beats `L01_A` `9–5` (`+6.00%`) across 14 shared weeks, raises Late 4-Wk Mean **`+21.90%`** (`1,670.00`), cuts relative volatility **`-52.25%`** (`CV = 9.57%`), raises Min **`+48.37%`** (`1,365`), and is the only over-budget option improving passages per `$1k` (`337.51`, **`+0.58%`**).
+   - **Why `L01_B` & `L04_B` Remain Poor Stretch Value:** `L01_B` (`$19,500`, `+8.33%`) posts `+8.01%` Mean (`1,630.88`, `14–0` vs. `L01_A`) but worsens relative volatility by **`+6.39%`** (`CV = 21.32%`) and costs `$500` more than steadier `L05_A`. `L04_B` (`$18,500`, `+2.78%`) actually drops **`-2.67%`** in Mean (`1,469.69`) and **`-5.30%`** in passages/`$1k` (`317.77`).
+2. **Two-Page Brief Page 1 Callout Restructure (`scripts/build_step4_final_pdfs.py`):**
+   - Reformatted the `"OUR RECOMMENDATION"` / `"How We Ranked Options:"` box into scannable multi-level bullets (`• 1.`..`3.` + indented `–` sub-bullets) and added the explicit **Best Overall Statistical Winner (`L05_B`)** budget-flexibility note under Criterion 1, re-verified via `validate_step4_final_pdfs.py` (`4/4 PASS`) and `validate_step5_package.py` (`2/2 PASS`).
+
 ---
 
 ## 5. Summary of Key Lessons Applied

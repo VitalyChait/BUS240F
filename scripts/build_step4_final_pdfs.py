@@ -438,23 +438,80 @@ def build_two_page_brief(golden: dict) -> None:
     )
     y -= 40
 
-    # Recommendation Callout + Priority Framework (Plain English)
-    rec_html = (
-        "<b>OUR RECOMMENDATION - Pick L01_A (Cedar Walk, Shift A: Tue-Sat 10:00am-2:00pm, Cost $18,000):</b> "
-        "To test shopper interest in reusable bottles and lunch containers during the 4-week pilot (Oct 12 - Nov 8, 2026; 20 hrs/wk), "
-        "<b>L01_A</b> brings the most foot traffic of any option within the <b>&lt;= $18,000</b> budget: <b>1,510.00</b> crossings per week on average "
-        "and <b>1,535.00</b> in a typical middle week (14 complete weeks out of 16; raw sum 21,140, Standard Deviation SD = 302.58, Coefficient of Variation CV = 20.04%, Interquartile Range IQR = 477.50, range 920-1,970).<br/>"
-        "<b>How We Ranked Options:</b> (1) Enforce the hard <b>$18,000</b> cap (ruling out 4 over-budget options: <i>L05_B</i> $21,000, <i>L01_B</i> $19,500, <i>L05_A</i> $19,000, <i>L04_B</i> $18,500); "
-        "(2) Maximize weekly passerby exposure; (3) Weigh paying $500 more than <i>L04_A</i> ($17,500): <i>L01_A</i> averages +108.64/wk over observed weeks (+434.57 over 4 wks = ~$1.15/extra crossing) and +93.83/wk over 12 shared weeks, though 6-6 paired wins (SE = 132.17) show tight week-to-week uncertainty."
+    # Recommendation Callout + Priority Framework (Plain English, Multi-Level Bullets)
+    rec_subhead_st = ParagraphStyle(
+        "RSH", fontName="Helvetica-Bold", fontSize=6.9, leading=9.1,
+        spaceBefore=3.0, textColor=DARK_TEXT,
     )
-    rp = Paragraph(rec_html, body_st)
-    _, rh = rp.wrap(content_w - 14, 150)
-    box_h = rh + 10
+    rec_l1_st = ParagraphStyle(
+        "RL1", fontName="Helvetica", fontSize=6.8, leading=8.9,
+        leftIndent=10, firstLineIndent=-8, spaceBefore=1.8, textColor=DARK_TEXT,
+    )
+    rec_l2_st = ParagraphStyle(
+        "RL2", fontName="Helvetica", fontSize=6.65, leading=8.7,
+        leftIndent=21, firstLineIndent=-8, spaceBefore=1.2, textColor=DARK_TEXT,
+    )
+    rec_blocks = [
+        (
+            "<b>OUR RECOMMENDATION - Pick L01_A (Cedar Walk, Shift A: Tue-Sat 10:00am-2:00pm, Cost $18,000):</b> "
+            "To test shopper interest in reusable bottles and lunch containers during the 4-week pilot (Oct 12 - Nov 8, 2026; 20 hrs/wk), "
+            "<b>L01_A</b> brings the most foot traffic of any option within the <b>&lt;= $18,000</b> budget: <b>1,510.00</b> crossings per week on average "
+            "and <b>1,535.00</b> in a typical middle week (14 complete weeks out of 16; raw sum 21,140, Standard Deviation SD = 302.58, "
+            "Coefficient of Variation CV = 20.04%, Interquartile Range IQR = 477.50, range 920-1,970).",
+            body_st,
+            0.0,
+        ),
+        ("How We Ranked Options:", rec_subhead_st, 3.0),
+        (
+            "&bull; <b>1. Enforce the hard $18,000 cap:</b> Eliminates 4 over-budget options "
+            "(<i>L05_B</i> $21,000, <i>L01_B</i> $19,500, <i>L05_A</i> $19,000, <i>L04_B</i> $18,500).",
+            rec_l1_st,
+            1.5,
+        ),
+        (
+            "&ndash; <b>Note - Best Overall Statistical Winner (L05_B):</b> Strictly by statistics, <b>L05_B</b> "
+            "(Juniper Row, Shift B, <b>$21,000</b>) is the <b>Best Overall Statistical Winner</b>, dropped solely due to hard cap limits. "
+            "If the budget has flexibility (+$3,000 / +16.67%), <i>L05_B</i> may be a better choice considering the multipliers and scale: "
+            "<b>+14.66%</b> higher mean (<b>1,731.40</b> vs. 1,510.00) and <b>+14.46%</b> higher median (<b>1,757.00</b>) scaled across the 4-week pilot (80 hrs), "
+            "<b>-50.10%</b> lower relative volatility (<b>CV = 10.00%</b> vs. 20.04%), and a <b>+61.96%</b> higher worst-week floor (<b>1,490</b> vs. 920). "
+            "(Even a +5.56% stretch to <i>L05_A</i> at $19,000 adds +6.17% traffic at 1,603.19 mean, 9.57% CV, and 16/16 complete weeks.)",
+            rec_l2_st,
+            1.2,
+        ),
+        (
+            "&bull; <b>2. Maximize weekly passerby exposure:</b> <b>L01_A</b> ranks #1 among all 8 affordable options on both Mean (<b>1,510.00</b>) and Median (<b>1,535.00</b>).",
+            rec_l1_st,
+            1.5,
+        ),
+        (
+            "&bull; <b>3. Weigh paying $500 more (+2.86%) than L04_A ($17,500):</b>",
+            rec_l1_st,
+            1.5,
+        ),
+        (
+            "&ndash; <i>L01_A</i> adds <b>+108.64/wk (+7.75%)</b> over observed weeks (+434.57 across 4 wks = ~$1.15/extra crossing) and "
+            "<b>+93.83/wk</b> over 12 shared weeks, though 6-6 paired wins (SE = 132.17) reflect tight week-to-week uncertainty.",
+            rec_l2_st,
+            1.0,
+        ),
+    ]
+    wrapped_rec: list[tuple[Paragraph, float, float]] = []
+    rh = 0.0
+    for txt, st, sp in rec_blocks:
+        p = Paragraph(txt, st)
+        _, ph = p.wrap(content_w - 14, 300)
+        wrapped_rec.append((p, ph, sp))
+        rh += ph + sp
+    box_h = rh + 9
     c.setFillColor(CALLOUT_BG)
     c.setStrokeColor(BLUE)
     c.setLineWidth(1.0)
     c.roundRect(margin_x, y - box_h, content_w, box_h, 4, fill=1, stroke=1)
-    rp.drawOn(c, margin_x + 7, y - 5 - rh)
+    ry = y - 4.5
+    for p, ph, sp in wrapped_rec:
+        ry -= sp
+        p.drawOn(c, margin_x + 7, ry - ph)
+        ry -= ph
     y -= (box_h + 7)
 
     # Credible Affordable Alternatives Comparison (Plain-English Bullets)
